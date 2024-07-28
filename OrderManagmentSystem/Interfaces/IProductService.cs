@@ -8,6 +8,6 @@ namespace OrderManagementSystem.Interfaces
         Task<Product> GetProductById(int id);
         Task<Product> AddProduct(Product product, IFormFile? imageFile);
         Task<Product> UpdateProduct(int id, Product product, IFormFile? imageFile);
-        Task DeleteProduct(int id);
+        Task<Product> DeleteProduct(int productId);
     }
 }

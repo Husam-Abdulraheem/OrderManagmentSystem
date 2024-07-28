@@ -75,9 +75,23 @@ namespace OrderManagementSystem.Controllers
             var updatedProduct = await _productService.UpdateProduct(id, product, imageFile);
             if (updatedProduct == null)
             {
-                return BadRequest();
+                return BadRequest("An error has occurred");
             }
-            return Ok("Updated Product Successful");
+            return Ok(updatedProduct);
+        }
+
+
+        // Delete Products
+        [Route("Delete/{id}")]
+        [HttpDelete]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var deleteProduct = await _productService.DeleteProduct(id);
+            if (deleteProduct == null)
+            {
+                return NotFound("An error has occurred");
+            }
+            return Ok(nameof(deleteProduct));
         }
 
 

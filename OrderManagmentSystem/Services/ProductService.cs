@@ -22,6 +22,8 @@ namespace OrderManagementSystem.Services
         }
 
 
+
+
         // Get all Products from Db
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
@@ -32,17 +34,16 @@ namespace OrderManagementSystem.Services
             }
             catch (Exception ex)
             {
-
                 throw new ApplicationException("Error when Get All Products", ex);
             }
-
         }
+
+
 
 
         // Get Product by Id Form Db
         public async Task<Product> GetProductById(int id)
         {
-
             try
             {
                 var product = await _db.Products.FirstOrDefaultAsync(x => x.Id == id);
@@ -50,10 +51,11 @@ namespace OrderManagementSystem.Services
             }
             catch (Exception ex)
             {
-
                 throw new ApplicationException("Error when Get Product by Id", ex);
             }
         }
+
+
 
 
 
@@ -138,6 +140,11 @@ namespace OrderManagementSystem.Services
 
 
 
+
+
+
+
+
         // Update Product
         public async Task<Product> UpdateProduct(int id, Product product, IFormFile? imageFile)
         {
@@ -200,6 +207,24 @@ namespace OrderManagementSystem.Services
             {
                 throw new InvalidOperationException("An error occurred while saving the image file.", ex);
             }
+        }
+
+
+        // Delete Products method
+        public async Task<Product> DeleteProduct(int productId)
+        {
+            var currProduct = await _db.Products.FindAsync(productId);
+
+
+            if (currProduct == null)
+            {
+                throw new ArgumentException("Can't find product");
+            }
+
+            _db.Products.Remove(currProduct);
+            await _db.SaveChangesAsync();
+            return currProduct;
+
         }
 
     }
