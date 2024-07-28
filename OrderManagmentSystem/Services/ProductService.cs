@@ -13,11 +13,10 @@ namespace OrderManagementSystem.Services
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _env;
 
-        public ProductService(IWebHostEnvironment env, ApplicationDbContext db)
+        public ProductService(ApplicationDbContext db)
         {
-            _env = env;
+
             _db = db;
         }
 
@@ -51,7 +50,7 @@ namespace OrderManagementSystem.Services
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Error when Get Product by Id", ex);
+                throw new ApplicationException("Error When Get Product By Id", ex);
             }
         }
 
@@ -81,7 +80,7 @@ namespace OrderManagementSystem.Services
             }
 
             string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName) + fileExtension;
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
             string filePath = Path.Combine(directoryPath, fileName);
 
             // Ensure the directory exists
@@ -118,7 +117,7 @@ namespace OrderManagementSystem.Services
                     Description = product.Description,
                     Price = product.Price,
                     StockQuantity = product.StockQuantity,
-                    Image = "Images/" + fileName,
+                    Image = "wwwroot/Images/" + fileName,
                     CategorieId = product.CategorieId,
                     SupplierId = product.SupplierId,
                 };

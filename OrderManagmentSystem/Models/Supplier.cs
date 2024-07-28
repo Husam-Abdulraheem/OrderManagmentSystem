@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderManagmentSystem.Models
 {
     public class Supplier
     {
-        [Key]
-        public long Id { get; set; } = DateTime.UtcNow.Ticks;
+        [Required]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
 
         public int UserId { get; set; }
@@ -15,5 +17,9 @@ namespace OrderManagmentSystem.Models
         //public ICollection<Order> Order { get; set; }
 
         public ICollection<Product> Products { get; set; }
+
+        public int categoryId { get; set; }
+
+        public string? subscription { get; set; }
     }
 }
