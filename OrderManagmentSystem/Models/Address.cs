@@ -7,28 +7,29 @@ namespace OrderManagmentSystem.Models
     [Table("AddressTable")]
     public class Address
     {
-        [Key]
-        public long Id { get; set; } = DateTime.UtcNow.Ticks;
+        [Required]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string city { get; set; }
+        public string City { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string district { get; set; }
+        public string District { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string region { get; set; }
+        public string Region { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string street { get; set; }
+        public string Street { get; set; }
 
         [Required]
         [StringLength(250)]
-        public string details { get; set; }
+        public string Details { get; set; }
 
     }
 

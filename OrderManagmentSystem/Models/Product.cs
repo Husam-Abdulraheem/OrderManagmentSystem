@@ -24,7 +24,7 @@ namespace OrderManagmentSystem.Models
         public int StockQuantity { get; set; } = 0;
 
 
-        [ForeignKey("Category")]
+        [Required]
         public int CategorieId { get; set; }
 
         [Required]

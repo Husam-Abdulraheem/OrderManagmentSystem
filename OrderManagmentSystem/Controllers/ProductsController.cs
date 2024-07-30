@@ -39,7 +39,7 @@ namespace OrderManagementSystem.Controllers
             var product = await _productService.GetProductById(id);
             if (product == null)
             {
-                return NotFound("Not Found This Product");
+                return NotFound(new { Message = "Not Found This Product" });
             }
             return Ok(product);
         }
@@ -52,7 +52,7 @@ namespace OrderManagementSystem.Controllers
         {
             if (product == null)
             {
-                return BadRequest("Error Can't Add this product");
+                return BadRequest(new { Message = "Error Can't Add this product" });
             }
             try
             {
@@ -75,7 +75,7 @@ namespace OrderManagementSystem.Controllers
             var updatedProduct = await _productService.UpdateProduct(id, product, imageFile);
             if (updatedProduct == null)
             {
-                return BadRequest("An error has occurred");
+                return BadRequest(new { Message = "An error has occurred" });
             }
             return Ok(updatedProduct);
         }
@@ -89,7 +89,7 @@ namespace OrderManagementSystem.Controllers
             var deleteProduct = await _productService.DeleteProduct(id);
             if (deleteProduct == null)
             {
-                return NotFound("An error has occurred");
+                return NotFound(new { Message = "An error has occurred" });
             }
             return Ok(nameof(deleteProduct));
         }

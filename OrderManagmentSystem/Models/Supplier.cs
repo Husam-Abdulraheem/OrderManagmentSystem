@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OrderManagmentSystem.Models.OrderFolder;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderManagmentSystem.Models
@@ -9,17 +10,15 @@ namespace OrderManagmentSystem.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-
-        public int UserId { get; set; }
         [Required]
         public User User { get; set; }
 
-        //public ICollection<Order> Order { get; set; }
+        public ICollection<Order> Order { get; set; }
 
         public ICollection<Product> Products { get; set; }
 
-        public int categoryId { get; set; }
+        public int CategoryId { get; set; }
 
-        public string? subscription { get; set; }
+        public string? Subscription { get; set; }
     }
 }

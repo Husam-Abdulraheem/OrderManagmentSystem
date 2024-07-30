@@ -6,8 +6,9 @@ namespace OrderManagmentSystem.Models
     [Table("UserTable")]
     public class User
     {
-        [Key]
-        public long Id { get; set; } = DateTime.UtcNow.Ticks;
+        [Required]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 3)]
@@ -30,7 +31,7 @@ namespace OrderManagmentSystem.Models
 
         [Required]
         [StringLength(120)]
-        public string businessName { get; set; }
+        public string BusinessName { get; set; }
 
         public Address? Addresses { get; set; }
 
@@ -38,7 +39,7 @@ namespace OrderManagmentSystem.Models
         public string UserType { get; set; }
 
         [Required]
-        public string businessDocument { get; set; }
+        public string BusinessDocument { get; set; }
 
         public string? Logo { get; set; }
 

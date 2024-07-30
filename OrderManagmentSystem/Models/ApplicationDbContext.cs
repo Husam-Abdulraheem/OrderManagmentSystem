@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Models.OrderFolder;
+using OrderManagmentSystem.Models.OrderFolder;
 
 namespace OrderManagmentSystem.Models
 {
@@ -9,10 +11,11 @@ namespace OrderManagmentSystem.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
-        //public DbSet<Retailer> Retailers { get; set; }
+        public DbSet<Retailer> Retailers { get; set; }
         public DbSet<Product> Products { get; set; }
-        //public DbSet<Address> Addresses { get; set; }
-        //public DbSet<Order> Orders { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<SupplierOrder> SupplierOrders { get; set; }
     }
 }
