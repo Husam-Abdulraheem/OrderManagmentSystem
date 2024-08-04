@@ -9,9 +9,11 @@ namespace OrderManagementSystem.Services
     public class SupplierService : ISupplierService
     {
         private readonly ApplicationDbContext _db;
-        public SupplierService(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _environment;
+        public SupplierService(ApplicationDbContext db, IWebHostEnvironment environment)
         {
             _db = db;
+            _environment = environment;
         }
 
         public async Task<IEnumerable<Supplier>> GetAllSuppliers()
@@ -36,7 +38,7 @@ namespace OrderManagementSystem.Services
             return supplier;
         }
 
-        public async Task<Supplier> UpdateSuppler(int id, UpdateSupplierDTO body)
+        public async Task<Supplier> UpdateSuppler(int id, [FromForm] UpdateSupplierDTO body)
         {
             var existingSupplier = await _db.Suppliers
                .Include(x => x.User)
@@ -52,7 +54,6 @@ namespace OrderManagementSystem.Services
             existingSupplier.User.Email = body.User.Email;
             existingSupplier.User.PhoneNumber = body.User.PhoneNumber;
             existingSupplier.User.BusinessName = body.User.BusinessName;
-            existingSupplier.User.Logo = body.User.Logo;
             existingSupplier.User.PasswordHash = existingSupplier.User.PasswordHash;
             existingSupplier.User.BusinessDocument = existingSupplier.User.BusinessDocument;
 
@@ -74,6 +75,33 @@ namespace OrderManagementSystem.Services
                 }
             }
 
+            // Handle image processing
+            if (body.User.Logo != null)
+            {
+                var resizedImage = await ImageService.ResizeAndCompressImage(body.User.Logo);
+
+                if (resizedImage != null)
+                {
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(imagesFolderPath))
+                        Directory.CreateDirectory(imagesFolderPath);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + resizedImage.FileName;
+                    string filePath = Path.Combine(imagesFolderPath, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await resizedImage.CopyToAsync(fileStream);
+                    }
+
+                    existingSupplier.User.LogoUrl = "/Images/" + uniqueFileName;
+                }
+                else
+                {
+                    existingSupplier.User.LogoUrl = null; // If image processing fails, set logo to null
+                }
+            }
+
             _db.Suppliers.Update(existingSupplier);
             await _db.SaveChangesAsync();
             return existingSupplier;
@@ -81,16 +109,14 @@ namespace OrderManagementSystem.Services
 
 
 
-        public async Task<IActionResult> GetOrdersForSupplier(int id)
+        public async Task<object> GetOrdersForSupplier(int id)
         {
-            var orders = _db.SupplierOrders.Where(x => x.SupplierId == id).Include(x => x.SupplierOrderItems);
+            var orders = await _db.SupplierOrders.Where(x => x.SupplierId == id).Include(x => x.SupplierOrderItems).ToListAsync();
             if (!orders.Any())
             {
-                throw new ArgumentException("You do not have any Orders");
+                return new { Message = "You do not have any Orders" };
             }
             return orders;
         }
-        //////////////////////////////////////////////////////
-
     }
 }

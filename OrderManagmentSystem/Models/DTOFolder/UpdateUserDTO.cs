@@ -10,6 +10,6 @@ namespace OrderManagementSystem.Models.DTOFolder
         public string? PhoneNumber { get; set; }
         public string? BusinessName { get; set; }
         public Address? Addresses { get; set; }
-        public string? Logo { get; set; }
+        public IFormFile? Logo { get; set; }
     }
 }

@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderManagementSystem.Interfaces;
+using OrderManagementSystem.Models.DTOFolder;
 using OrderManagmentSystem.Models;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
 
 
 namespace OrderManagementSystem.Services
@@ -13,11 +10,13 @@ namespace OrderManagementSystem.Services
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductService(ApplicationDbContext db)
+        public ProductService(ApplicationDbContext db, IWebHostEnvironment environment)
         {
 
             _db = db;
+            _environment = environment;
         }
 
 
@@ -59,82 +58,46 @@ namespace OrderManagementSystem.Services
 
 
         //Add New Product
-        public async Task<Product> AddProduct(Product product, IFormFile? imageFile)
+        public async Task<Product> AddProduct([FromForm] ProductDTO product)
         {
-            if (product == null)
+            string imageUrl = null;
+            if (product.Image != null)
             {
-                throw new ArgumentException("Product cannot be null.");
-            }
+                var resizedImage = await ImageService.ResizeAndCompressImage(product.Image);
 
-            if (imageFile == null || imageFile.Length == 0)
-            {
-                throw new ArgumentException("Invalid image file.");
-            }
-
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".svg" };
-            var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-            if (!validExtensions.Contains(fileExtension))
-            {
-                throw new ArgumentException("Invalid image file format.");
-            }
-
-            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName) + fileExtension;
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Ensure the directory exists
-            Directory.CreateDirectory(directoryPath);
-
-            try
-            {
-                using (var stream = imageFile.OpenReadStream())
+                if (resizedImage != null)
                 {
-                    using (var image = await Image.LoadAsync(stream))
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(imagesFolderPath))
+                        Directory.CreateDirectory(imagesFolderPath);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + resizedImage.FileName;
+                    string filePath = Path.Combine(imagesFolderPath, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        // Resize Image
-                        image.Mutate(x => x.Resize(new ResizeOptions
-                        {
-                            Mode = ResizeMode.Max,
-                            Size = new Size(400, 400)
-                        }));
-
-                        IImageEncoder encoder = fileExtension switch
-                        {
-                            ".jpg" or ".jpeg" => new JpegEncoder { Quality = 75 },
-                            ".png" => new PngEncoder(),
-                            // Add other encoders if needed
-                            _ => throw new NotSupportedException($"File extension {fileExtension} is not supported.")
-                        };
-
-                        await image.SaveAsync(filePath, encoder);
+                        await resizedImage.CopyToAsync(fileStream);
                     }
+
+                    imageUrl = "/Images/" + uniqueFileName;
                 }
-
-                var newProduct = new Product
-                {
-                    Title = product.Title,
-                    Description = product.Description,
-                    Price = product.Price,
-                    StockQuantity = product.StockQuantity,
-                    Image = "wwwroot/Images/" + fileName,
-                    CategorieId = product.CategorieId,
-                    SupplierId = product.SupplierId,
-                };
-
-                _db.Products.Add(newProduct);
-                _db.SaveChanges();
-
-                return newProduct;
             }
-            catch (NotSupportedException nsEx)
+
+            var newProduct = new Product
             {
-                throw new ArgumentException(nsEx.Message, nsEx);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("An error occurred while saving the image file.", ex);
-            }
+                Title = product.Title,
+                Description = product.Description,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity,
+                ImageUrl = imageUrl,
+                CategoryId = product.CategoryId,
+                SupplierId = product.SupplierId,
+            };
+
+            await _db.Products.AddAsync(newProduct);
+            await _db.SaveChangesAsync();
+
+            return newProduct;
         }
 
 
@@ -144,68 +107,61 @@ namespace OrderManagementSystem.Services
 
 
 
+
+
         // Update Product
-        public async Task<Product> UpdateProduct(int id, Product product, IFormFile? imageFile)
+        public async Task<Product> UpdateProduct(int id, [FromForm] ProductDTO product)
         {
             var updatedProduct = await _db.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
 
-
-            if (product == null)
+            if (updatedProduct == null)
             {
-                throw new ArgumentException("Product cannot be null.");
+                throw new ArgumentException("Product not found");
             }
 
-            if (imageFile == null || imageFile.Length == 0)
+            // Update product details
+            updatedProduct.Title = product.Title;
+            updatedProduct.Description = product.Description;
+            updatedProduct.Price = product.Price;
+            updatedProduct.CategoryId = product.CategoryId;
+            updatedProduct.SupplierId = product.SupplierId;
+            updatedProduct.StockQuantity = product.StockQuantity;
+
+            // Handle image processing
+            if (product.Image != null)
             {
-                throw new ArgumentException("Invalid image file.");
-            }
+                var resizedImage = await ImageService.ResizeAndCompressImage(product.Image);
 
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".svg" };
-            var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-            if (!Array.Exists(validExtensions, ext => ext == fileExtension))
-            {
-                throw new ArgumentException("Invalid image file format.");
-            }
-
-            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName) + fileExtension;
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Ensure the directory exists
-            Directory.CreateDirectory(directoryPath);
-
-            try
-            {
-                using (var image = await Image.LoadAsync(imageFile.OpenReadStream()))
+                if (resizedImage != null)
                 {
-                    // Resize Image
-                    image.Mutate(x => x.Resize(new ResizeOptions
-                    {
-                        Mode = ResizeMode.Max,
-                        Size = new Size(400, 400)
-                    }));
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(imagesFolderPath))
+                        Directory.CreateDirectory(imagesFolderPath);
 
-                    var encoder = new JpegEncoder
-                    {
-                        Quality = 75
-                    };
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + resizedImage.FileName;
+                    string filePath = Path.Combine(imagesFolderPath, uniqueFileName);
 
-                    await image.SaveAsync(filePath, encoder);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await resizedImage.CopyToAsync(fileStream);
+                    }
+
+                    updatedProduct.ImageUrl = "/Images/" + uniqueFileName;
                 }
-
-                updatedProduct.Title = product.Title;
-                updatedProduct.Description = product.Description;
-
-                _db.Products.Update(updatedProduct);
-                await _db.SaveChangesAsync();
-
-                return updatedProduct;
+                else
+                {
+                    updatedProduct.ImageUrl = null; // If image processing fails, set logo to null
+                }
             }
-            catch (Exception ex)
+            else
             {
-                throw new InvalidOperationException("An error occurred while saving the image file.", ex);
+                updatedProduct.ImageUrl = null;
             }
+
+            _db.Products.Update(updatedProduct);
+            await _db.SaveChangesAsync();
+
+            return updatedProduct;
         }
 
 

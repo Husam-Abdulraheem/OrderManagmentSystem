@@ -1,4 +1,5 @@
-﻿using OrderManagmentSystem.Models;
+﻿using OrderManagementSystem.Models.DTOFolder;
+using OrderManagmentSystem.Models;
 
 namespace OrderManagementSystem.Interfaces
 {
@@ -6,8 +7,8 @@ namespace OrderManagementSystem.Interfaces
     {
         Task<IEnumerable<Product>> GetAllProducts();
         Task<Product> GetProductById(int id);
-        Task<Product> AddProduct(Product product, IFormFile? imageFile);
-        Task<Product> UpdateProduct(int id, Product product, IFormFile? imageFile);
+        Task<Product> AddProduct(ProductDTO product);
+        Task<Product> UpdateProduct(int id, ProductDTO product);
         Task<Product> DeleteProduct(int productId);
     }
 }

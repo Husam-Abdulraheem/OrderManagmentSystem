@@ -41,7 +41,7 @@ namespace OrderManagmentSystem.Models
         [Required]
         public string BusinessDocument { get; set; }
 
-        public string? Logo { get; set; }
+        public string? LogoUrl { get; set; }
 
         public bool IsAdmin { get; set; } = false;
 

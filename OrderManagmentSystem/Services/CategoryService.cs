@@ -1,96 +1,66 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderManagementSystem.Interfaces;
 using OrderManagementSystem.Models;
 using OrderManagmentSystem.Models;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
 
 namespace OrderManagementSystem.Services
 {
     public class CategoryService : ICategoryService
     {
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _environment;
 
-        public CategoryService(ApplicationDbContext db)
+        public CategoryService(ApplicationDbContext db, IWebHostEnvironment environment)
         {
             _db = db;
+            _environment = environment;
         }
 
 
 
-        public async Task<Category> AddNewCategory(CategoryDTO category, IFormFile? imageFile)
+        public async Task<Category> AddNewCategory([FromForm] CategoryDTO categ)
         {
-            if (category == null)
+            string? imageUrl = null;
+
+            if (categ.Image != null)
             {
-                throw new ArgumentException("Product cannot be null.");
-            }
+                var resizedImage = await ImageService.ResizeAndCompressImage(categ.Image);
 
-            if (imageFile == null || imageFile.Length == 0)
-            {
-                throw new ArgumentException("Invalid image file.");
-            }
-
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".svg" };
-            var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-            if (!validExtensions.Contains(fileExtension))
-            {
-                throw new ArgumentException("Invalid image file format.");
-            }
-
-            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName) + fileExtension;
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images/CategoryImg");
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Ensure the directory exists
-            Directory.CreateDirectory(directoryPath);
-
-            try
-            {
-                using (var stream = imageFile.OpenReadStream())
+                if (resizedImage != null)
                 {
-                    using (var image = await Image.LoadAsync(stream))
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(imagesFolderPath))
+                        Directory.CreateDirectory(imagesFolderPath);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + resizedImage.FileName;
+                    string filePath = Path.Combine(imagesFolderPath, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        // Resize Image
-                        image.Mutate(x => x.Resize(new ResizeOptions
-                        {
-                            Mode = ResizeMode.Max,
-                            Size = new Size(400, 400)
-                        }));
-
-                        IImageEncoder encoder = fileExtension switch
-                        {
-                            ".jpg" or ".jpeg" => new JpegEncoder { Quality = 75 },
-                            ".png" => new PngEncoder(),
-                            // Add other encoders if needed
-                            _ => throw new NotSupportedException($"File extension {fileExtension} is not supported.")
-                        };
-
-                        await image.SaveAsync(filePath, encoder);
+                        await resizedImage.CopyToAsync(fileStream);
                     }
+
+                    imageUrl = "/Images/" + uniqueFileName;
                 }
-
-                var newCategory = new Category
-                {
-                    Name = category.Name,
-                    Image = "wwwroot/Images/CategoryImg/" + fileName,
-                    Products = new List<Product>()
-                };
-
-                _db.Categories.Add(newCategory);
-                _db.SaveChanges();
-
-                return newCategory;
-
             }
-            catch (Exception ex)
+
+            Category category = new Category()
             {
-                throw new InvalidOperationException("An error occurred while saving the image file.", ex);
-            }
+                Name = categ.Name,
+                ImageUrl = imageUrl,
+                Products = new List<Product>()
+            };
+
+            await _db.Categories.AddAsync(category);
+            await _db.SaveChangesAsync();
+
+            throw new ArgumentException("Category added successfully");
         }
+
+
+
+
 
         // Get All Categories
         public async Task<IEnumerable<Category>> GetAllCategories()
@@ -128,6 +98,18 @@ namespace OrderManagementSystem.Services
                 throw new ApplicationException("Don't have suppliers have this category");
             }
             return suppliers;
+        }
+
+        public async Task<Category> Delete(int id)
+        {
+            var category = await _db.Categories.FindAsync(id);
+            if (category == null)
+            {
+                throw new ApplicationException("An error has occurred");
+            }
+            _db.Categories.Remove(category);
+            _db.SaveChanges();
+            return category;
         }
     }
 }

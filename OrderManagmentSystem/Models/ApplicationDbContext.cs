@@ -14,8 +14,9 @@ namespace OrderManagmentSystem.Models
         public DbSet<Retailer> Retailers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<SupplierOrder> SupplierOrders { get; set; }
+        public DbSet<SupplierOrderItem> SupplierOrderItems { get; set; }
     }
 }

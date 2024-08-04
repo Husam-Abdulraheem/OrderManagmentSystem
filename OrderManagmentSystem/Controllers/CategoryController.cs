@@ -14,18 +14,27 @@ namespace OrderManagementSystem.Controllers
         {
             _categoryService = categoryService;
         }
-
-        [HttpGet]
-        public async Task<IActionResult> AddNewCategory(CategoryDTO category, IFormFile? imageFile)
+        [Route("Add")]
+        [HttpPost]
+        public async Task<ActionResult> AddNewCategory([FromForm] CategoryDTO category)
         {
-            var newCategory = await _categoryService.AddNewCategory(category, imageFile);
 
-            if (newCategory == null)
+            if (category == null)
             {
 
                 return BadRequest(new { Message = "Error when create new Category" });
             }
-            return Ok(new { Message = "Category added successfully" });
+            try
+            {
+                var newCategory = await _categoryService.AddNewCategory(category);
+                return Ok(new { Message = "Category added successfully" });
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Route("All")]

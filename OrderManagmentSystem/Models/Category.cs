@@ -14,8 +14,8 @@ namespace OrderManagmentSystem.Models
         [MinLength(2), StringLength(50)]
         public string Name { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product>? Products { get; set; }
 
-        public string Image { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagementSystem.Interfaces;
-using OrderManagmentSystem.Models;
+using OrderManagementSystem.Models.DTOFolder;
 
 namespace OrderManagementSystem.Controllers
 {
@@ -32,7 +32,7 @@ namespace OrderManagementSystem.Controllers
 
 
         // Get Product By Id
-        [Route("/{Id}")]
+        [Route("{id}")]
         [HttpGet]
         public async Task<ActionResult> GetProductById(int id)
         {
@@ -48,7 +48,7 @@ namespace OrderManagementSystem.Controllers
         // Add New Product
         [Route("Add")]
         [HttpPost]
-        public async Task<ActionResult> AddProduct([FromForm] Product product, IFormFile? imageFile)
+        public async Task<ActionResult> AddProduct([FromForm] ProductDTO product)
         {
             if (product == null)
             {
@@ -56,7 +56,7 @@ namespace OrderManagementSystem.Controllers
             }
             try
             {
-                var addProduct = await _productService.AddProduct(product, imageFile);
+                var addProduct = await _productService.AddProduct(product);
                 return Ok(addProduct);
             }
             catch (Exception ex)
@@ -69,15 +69,19 @@ namespace OrderManagementSystem.Controllers
 
         // Update Product
         [Route("Update/{id}")]
-        [HttpPut]
-        public async Task<ActionResult> Edit(int id, [FromForm] Product product, IFormFile? imageFile)
+        [HttpPatch]
+        public async Task<ActionResult> Edit(int id, [FromForm] ProductDTO product)
         {
-            var updatedProduct = await _productService.UpdateProduct(id, product, imageFile);
-            if (updatedProduct == null)
+            try
             {
-                return BadRequest(new { Message = "An error has occurred" });
+                var updatedProduct = await _productService.UpdateProduct(id, product);
+                return Ok(updatedProduct);
             }
-            return Ok(updatedProduct);
+            catch (Exception ex)
+            {
+
+                return StatusCode(400, ex.Message);
+            }
         }
 
 

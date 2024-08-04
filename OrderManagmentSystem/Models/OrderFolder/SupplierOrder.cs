@@ -14,7 +14,7 @@ namespace OrderManagementSystem.Models.OrderFolder
         public float Total { get; set; }
 
         [ForeignKey("Retailer")]
-        public int businessId { get; set; }
+        public int RetailerId { get; set; }
         public Retailer Retailer { get; set; }
 
         public List<SupplierOrderItem> SupplierOrderItems { get; set; }

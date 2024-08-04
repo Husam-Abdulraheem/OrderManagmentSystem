@@ -16,21 +16,19 @@ namespace OrderManagmentSystem.Models
         public string? Description { get; set; }
 
         [Required]
-        [Range(0, float.MaxValue, ErrorMessage = "Price can not be a negative value")]
         public float Price { get; set; } = 0;
 
         [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Amount can not be a negative value")]
         public int StockQuantity { get; set; } = 0;
 
 
         [Required]
-        public int CategorieId { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
         public int SupplierId { get; set; }
 
-        public string? Image { get; set; }
+        public string? ImageUrl { get; set; }
 
 
 
