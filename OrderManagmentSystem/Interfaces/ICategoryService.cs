@@ -1,4 +1,4 @@
-﻿using OrderManagementSystem.Models;
+﻿using OrderManagementSystem.Models.DTOFolder;
 using OrderManagmentSystem.Models;
 
 namespace OrderManagementSystem.Interfaces
