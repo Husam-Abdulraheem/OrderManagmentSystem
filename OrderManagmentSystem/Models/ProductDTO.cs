@@ -1,4 +1,4 @@
-﻿namespace OrderManagementSystem.Models.DTOFolder
+﻿namespace OrderManagementSystem.Models
 {
     public class ProductDTO
     {

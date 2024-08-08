@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Data;
+using OrderManagementSystem.Data.Models;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.DTOFolder;
-using OrderManagmentSystem.Models;
-
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Services
 {

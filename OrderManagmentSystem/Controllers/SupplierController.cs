@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.DTOFolder;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Controllers
 {
@@ -46,8 +46,8 @@ namespace OrderManagementSystem.Controllers
         }
 
         [Route("{id}/Update")]
-        [HttpPatch]
-        public async Task<IActionResult> UpdateSuppler(int id, [FromForm] UpdateSupplierDTO body)
+        [HttpPut]
+        public async Task<IActionResult> UpdateSuppler(int id, [FromForm] UpdateUserDTO body)
         {
             try
             {
@@ -58,22 +58,6 @@ namespace OrderManagementSystem.Controllers
             {
 
                 return BadRequest(new { Message = $"Error when Update Supplier with id => {id}" + ex });
-            }
-        }
-
-        [Route("{id}/Orders")]
-        [HttpGet]
-        public async Task<object> GetOrdersForSupplier(int id)
-        {
-            try
-            {
-                var orders = await _supplierService.GetOrdersForSupplier(id);
-                return orders;
-            }
-            catch (Exception ex)
-            {
-
-                throw new ArgumentException($"Error when Get Orders for this supplier with id => {id}" + ex);
             }
         }
     }

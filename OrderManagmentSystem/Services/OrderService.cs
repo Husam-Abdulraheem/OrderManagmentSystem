@@ -1,19 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Data;
+using OrderManagementSystem.Data.Models;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.OrderFolder;
-using OrderManagmentSystem.Models;
-using OrderManagmentSystem.Models.OrderFolder;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _environment;
 
-        public OrderService(ApplicationDbContext dbContext, IWebHostEnvironment environment)
+        public OrderService(ApplicationDbContext db, IWebHostEnvironment environment)
         {
-            _dbContext = dbContext;
+            _db = db;
             _environment = environment;
         }
 
@@ -21,8 +21,8 @@ namespace OrderManagementSystem.Services
         {
             try
             {
-                return await _dbContext.Orders
-                    .Include(o => o.ProductInOrder)
+                return await _db.Orders
+                    .Include(o => o.OrderItems)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -31,66 +31,109 @@ namespace OrderManagementSystem.Services
             }
         }
 
-        public async Task<Order> ReceiveOrder(Order order)
+        public async Task<OrderDTO> AddOrder(OrderDTO dto)
         {
-            if (order == null)
-                throw new ArgumentNullException(nameof(order), "Order cannot be null.");
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "Order cannot be null.");
 
-            if (order.ProductInOrder == null || !order.ProductInOrder.Any())
-                throw new ArgumentException("Order must contain at least one product.", nameof(order));
-
-            // Add the order to the database
-            _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync();
-
-            // Split the order between suppliers
-            await SplitOrderAsync(order);
-
-            return order;
-        }
-
-        public async Task SplitOrderAsync(Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException(nameof(order), "Order cannot be null.");
-
-            if (order.ProductInOrder == null || !order.ProductInOrder.Any())
-                throw new ArgumentException("Order must contain at least one product.", nameof(order));
-
-            var supplierOrders = new Dictionary<int, SupplierOrder>();
-
-            foreach (var item in order.ProductInOrder)
+            if (dto.Items == null || !dto.Items.Any())
             {
-                if (!supplierOrders.ContainsKey(item.SupplierId))
-                {
-                    supplierOrders[item.SupplierId] = new SupplierOrder
-                    {
-                        SupplierId = item.SupplierId,
-                        OrderDate = order.OrderDate,
-                        RetailerId = order.RetailerId,
-                        SupplierOrderItems = new List<SupplierOrderItem>()
-                    };
-                }
-
-                var supplierOrderItem = new SupplierOrderItem
-                {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    TotalPrice = (float)(item.Quantity * GetProductPrice(item.ProductId))
-                };
-
-                supplierOrders[item.SupplierId].SupplierOrderItems.Add(supplierOrderItem);
-                supplierOrders[item.SupplierId].Total += supplierOrderItem.TotalPrice;
+                throw new ArgumentException("Order must contain at least one product.", nameof(dto));
             }
 
-            _dbContext.SupplierOrders.AddRange(supplierOrders.Values);
-            await _dbContext.SaveChangesAsync();
+            Order order = new()
+            {
+                RetailerId = dto.RetailerId,
+                OrderDate = dto.OrderDate,
+                OrderItems = new List<OrderItem>()
+            };
+
+            foreach (var item in dto.Items)
+            {
+                OrderItem orderItem = new()
+                {
+                    ProductId = item.ProductId,
+                    SupplierId = item.SupplierId,
+                    Quantity = item.Quantity,
+                };
+                order.OrderItems.Add(orderItem);
+            }
+
+            _db.Orders.Add(order);
+            await _db.SaveChangesAsync();
+
+            dto.OrderId = order.Id;
+
+            return dto;
         }
 
-        private double GetProductPrice(int productId)
+        public async Task<List<OrderDTO>> GetOrdersByRetailer(int retailerId)
         {
-            // Replace this with the actual logic to get product price from the database or another service
-            return 10.0;
+            var orders = await _db.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product) // Include Product if needed
+                .Where(o => o.RetailerId == retailerId)
+                .ToListAsync();
+
+            var orderDtos = new List<OrderDTO>();
+
+            foreach (var order in orders)
+            {
+                var groupedItems = order.OrderItems
+                    .GroupBy(item => item.SupplierId)
+                    .Select(g => new
+                    {
+                        SupplierId = g.Key,
+                        Items = g.Select(item => new OrderItemDTO
+                        {
+                            ProductId = item.ProductId,
+                            SupplierId = item.SupplierId,
+                            Quantity = item.Quantity
+                        }).ToList()
+                    })
+                    .ToList();
+
+                foreach (var group in groupedItems)
+                {
+                    var orderDto = new OrderDTO
+                    {
+                        OrderId = order.Id,
+                        RetailerId = order.RetailerId,
+                        OrderDate = order.OrderDate,
+                        Items = group.Items
+                    };
+
+                    orderDtos.Add(orderDto);
+                }
+            }
+
+            return orderDtos;
+        }
+
+
+
+        public async Task<List<OrderDTO>> GetOrdersBySupplier(int supplierId)
+        {
+            var orderItems = await _db.OrderItems
+                .Include(oi => oi.Order)
+                .Where(oi => oi.SupplierId == supplierId)
+                .ToListAsync();
+
+            var orderDtos = orderItems.GroupBy(oi => oi.OrderId)
+                .Select(group => new OrderDTO
+                {
+                    OrderId = group.First().OrderId,
+                    RetailerId = group.First().Order.RetailerId,
+                    OrderDate = group.First().Order.OrderDate,
+                    Items = group.Select(item => new OrderItemDTO
+                    {
+                        ProductId = item.ProductId,
+                        SupplierId = item.SupplierId,
+                        Quantity = item.Quantity
+                    }).ToList()
+                }).ToList();
+
+            return orderDtos;
         }
     }
 }

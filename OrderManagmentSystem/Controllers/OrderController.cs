@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagementSystem.Interfaces;
-using OrderManagmentSystem.Models.OrderFolder;
-using System.Security.Claims;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Controllers
 {
@@ -28,24 +27,51 @@ namespace OrderManagementSystem.Controllers
             return Ok(orders);
         }
 
-        [Route("receive")]
+        [Route("Add")]
         [HttpPost]
-        public async Task<IActionResult> ReceiveOrder([FromBody] Order order)
+        public async Task<IActionResult> AddOrder([FromBody] OrderDTO order)
         {
-            if (User.FindFirstValue("Role") != "Business")
-            {
-                return Unauthorized();
-            }
+            //if (User.FindFirstValue("Role") != "Business")
+            //{
+            //    return Unauthorized();
+            //}
 
             try
             {
-                var receivedOrder = await _orderService.ReceiveOrder(order);
-                return CreatedAtAction(nameof(ReceiveOrder), new { id = receivedOrder.Id }, receivedOrder);
+                var newOrder = await _orderService.AddOrder(order);
+                return CreatedAtAction(nameof(AddOrder), new { id = newOrder.OrderId }, newOrder);
             }
             catch (ApplicationException ex)
             {
                 return BadRequest(new { ex.Message });
             }
         }
+
+        [Route("retailer/{retailerId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetOrdersByRetailer(int retailerId)
+        {
+            var orders = await _orderService.GetOrdersByRetailer(retailerId);
+            if (orders == null)
+            {
+                return NotFound("No orders found.");
+            }
+
+            return Ok(orders);
+        }
+
+        [Route("supplier/{supplierId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetOrdersBySupplier(int supplierId)
+        {
+            var orders = await _orderService.GetOrdersBySupplier(supplierId);
+            if (orders == null)
+            {
+                return NotFound("No orders found.");
+            }
+
+            return Ok(orders);
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderManagmentSystem.Models
+namespace OrderManagementSystem.Data.Models
 {
     [Table("CategoryTable")]
     public class Category
@@ -14,7 +14,7 @@ namespace OrderManagmentSystem.Models
         [MinLength(2), StringLength(50)]
         public string Name { get; set; }
 
-        public ICollection<Product>? Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
 
         public string? ImageUrl { get; set; }
     }

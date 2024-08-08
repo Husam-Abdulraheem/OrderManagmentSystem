@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderManagmentSystem.Models
+namespace OrderManagementSystem.Data.Models
 {
     [Table("UserTable")]
     public class User
@@ -33,7 +33,7 @@ namespace OrderManagmentSystem.Models
         [StringLength(120)]
         public string BusinessName { get; set; }
 
-        public Address? Addresses { get; set; }
+        public virtual Address? Addresses { get; set; }
 
         [Required]
         public string UserType { get; set; }

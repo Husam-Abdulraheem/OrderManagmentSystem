@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.DTOFolder;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Controllers
 {

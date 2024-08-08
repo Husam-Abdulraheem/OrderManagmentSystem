@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Data;
 using OrderManagementSystem.Interfaces;
 using OrderManagementSystem.Services;
-using OrderManagmentSystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IRetailerService, RetailerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddControllers();

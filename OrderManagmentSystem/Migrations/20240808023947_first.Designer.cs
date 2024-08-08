@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using OrderManagmentSystem.Models;
+using OrderManagementSystem.Data;
 
 #nullable disable
 
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240804111224_son")]
-    partial class son
+    [Migration("20240808023947_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,88 +25,7 @@ namespace OrderManagementSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.ProductInOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("ProductInOrder");
-                });
-
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.SupplierOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RetailerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Total")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RetailerId");
-
-                    b.ToTable("SupplierOrders");
-                });
-
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.SupplierOrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("TotalPrice")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SupplierOrderId");
-
-                    b.ToTable("SupplierOrderItems");
-                });
-
-            modelBuilder.Entity("OrderManagmentSystem.Models.Address", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Address", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,7 +58,7 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("AddressTable");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.Category", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +79,7 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("CategoryTable");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.OrderFolder.Order", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,21 +93,45 @@ namespace OrderManagementSystem.Migrations
                     b.Property<int>("RetailerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SupplierId");
+                    b.HasIndex("RetailerId");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.Product", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -227,25 +170,7 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("ProductTable");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.Retailer", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int>("userId")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("userId");
-
-                    b.ToTable("Retailers");
-                });
-
-            modelBuilder.Entity("OrderManagmentSystem.Models.Supplier", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Retailer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -253,8 +178,23 @@ namespace OrderManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Retailers");
+                });
+
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Subscription")
                         .HasColumnType("nvarchar(max)");
@@ -269,7 +209,7 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.User", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -332,16 +272,9 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("UserTable");
                 });
 
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.ProductInOrder", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
                 {
-                    b.HasOne("OrderManagmentSystem.Models.OrderFolder.Order", null)
-                        .WithMany("ProductInOrder")
-                        .HasForeignKey("OrderId");
-                });
-
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.SupplierOrder", b =>
-                {
-                    b.HasOne("OrderManagmentSystem.Models.Retailer", "Retailer")
+                    b.HasOne("OrderManagementSystem.Data.Models.Retailer", "Retailer")
                         .WithMany()
                         .HasForeignKey("RetailerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -350,51 +283,51 @@ namespace OrderManagementSystem.Migrations
                     b.Navigation("Retailer");
                 });
 
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.SupplierOrderItem", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.OrderItem", b =>
                 {
-                    b.HasOne("OrderManagementSystem.Models.OrderFolder.SupplierOrder", null)
-                        .WithMany("SupplierOrderItems")
-                        .HasForeignKey("SupplierOrderId")
+                    b.HasOne("OrderManagementSystem.Data.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .IsRequired();
+
+                    b.HasOne("OrderManagementSystem.Data.Models.Product", "Product")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ProductId")
+                        .IsRequired();
+
+                    b.HasOne("OrderManagementSystem.Data.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.OrderFolder.Order", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Product", b =>
                 {
-                    b.HasOne("OrderManagmentSystem.Models.Supplier", null)
-                        .WithMany("Order")
-                        .HasForeignKey("SupplierId");
-                });
-
-            modelBuilder.Entity("OrderManagmentSystem.Models.Product", b =>
-                {
-                    b.HasOne("OrderManagmentSystem.Models.Category", null)
+                    b.HasOne("OrderManagementSystem.Data.Models.Category", null)
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderManagmentSystem.Models.Supplier", null)
+                    b.HasOne("OrderManagementSystem.Data.Models.Supplier", "Supplier")
                         .WithMany("Products")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.Retailer", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Retailer", b =>
                 {
-                    b.HasOne("OrderManagmentSystem.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("user");
-                });
-
-            modelBuilder.Entity("OrderManagmentSystem.Models.Supplier", b =>
-                {
-                    b.HasOne("OrderManagmentSystem.Models.User", "User")
+                    b.HasOne("OrderManagementSystem.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -403,34 +336,43 @@ namespace OrderManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.User", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
                 {
-                    b.HasOne("OrderManagmentSystem.Models.Address", "Addresses")
+                    b.HasOne("OrderManagementSystem.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.User", b =>
+                {
+                    b.HasOne("OrderManagementSystem.Data.Models.Address", "Addresses")
                         .WithMany()
                         .HasForeignKey("AddressesId");
 
                     b.Navigation("Addresses");
                 });
 
-            modelBuilder.Entity("OrderManagementSystem.Models.OrderFolder.SupplierOrder", b =>
-                {
-                    b.Navigation("SupplierOrderItems");
-                });
-
-            modelBuilder.Entity("OrderManagmentSystem.Models.Category", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.OrderFolder.Order", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
                 {
-                    b.Navigation("ProductInOrder");
+                    b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("OrderManagmentSystem.Models.Supplier", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Product", b =>
                 {
-                    b.Navigation("Order");
+                    b.Navigation("OrderItems");
+                });
 
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
+                {
                     b.Navigation("Products");
                 });
 #pragma warning restore 612, 618

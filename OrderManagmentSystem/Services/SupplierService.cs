@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Data;
+using OrderManagementSystem.Data.Models;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.DTOFolder;
-using OrderManagmentSystem.Models;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Services
 {
@@ -38,7 +39,7 @@ namespace OrderManagementSystem.Services
             return supplier;
         }
 
-        public async Task<Supplier> UpdateSuppler(int id, [FromForm] UpdateSupplierDTO body)
+        public async Task<Supplier> UpdateSuppler(int id, [FromForm] UpdateUserDTO body)
         {
             var existingSupplier = await _db.Suppliers
                .Include(x => x.User)
@@ -49,36 +50,36 @@ namespace OrderManagementSystem.Services
             {
                 throw new ArgumentException("Supplier not found");
             }
-            existingSupplier.User.FirstName = body.User.FirstName;
-            existingSupplier.User.LastName = body.User.LastName;
-            existingSupplier.User.Email = body.User.Email;
-            existingSupplier.User.PhoneNumber = body.User.PhoneNumber;
-            existingSupplier.User.BusinessName = body.User.BusinessName;
+            existingSupplier.User.FirstName = body.FirstName;
+            existingSupplier.User.LastName = body.LastName;
+            existingSupplier.User.Email = body.Email;
+            existingSupplier.User.PhoneNumber = body.PhoneNumber;
+            existingSupplier.User.BusinessName = body.BusinessName;
             existingSupplier.User.PasswordHash = existingSupplier.User.PasswordHash;
             existingSupplier.User.BusinessDocument = existingSupplier.User.BusinessDocument;
 
-            if (body.User.Addresses != null)
+            if (body.Addresses != null)
             {
                 if (existingSupplier.User.Addresses == null)
                 {
                     // if Address null Add New Address
-                    existingSupplier.User.Addresses = body.User.Addresses;
+                    existingSupplier.User.Addresses = body.Addresses;
                     _db.Addresses.Add(existingSupplier.User.Addresses);
                 }
                 else
                 {
-                    existingSupplier.User.Addresses.City = body.User.Addresses.City;
-                    existingSupplier.User.Addresses.District = body.User.Addresses.District;
-                    existingSupplier.User.Addresses.Street = body.User.Addresses.Street;
-                    existingSupplier.User.Addresses.Region = body.User.Addresses.Region;
-                    existingSupplier.User.Addresses.Details = body.User.Addresses.Details;
+                    existingSupplier.User.Addresses.City = body.Addresses.City;
+                    existingSupplier.User.Addresses.District = body.Addresses.District;
+                    existingSupplier.User.Addresses.Street = body.Addresses.Street;
+                    existingSupplier.User.Addresses.Region = body.Addresses.Region;
+                    existingSupplier.User.Addresses.Details = body.Addresses.Details;
                 }
             }
 
             // Handle image processing
-            if (body.User.Logo != null)
+            if (body.Logo != null)
             {
-                var resizedImage = await ImageService.ResizeAndCompressImage(body.User.Logo);
+                var resizedImage = await ImageService.ResizeAndCompressImage(body.Logo);
 
                 if (resizedImage != null)
                 {
@@ -107,16 +108,5 @@ namespace OrderManagementSystem.Services
             return existingSupplier;
         }
 
-
-
-        public async Task<object> GetOrdersForSupplier(int id)
-        {
-            var orders = await _db.SupplierOrders.Where(x => x.SupplierId == id).Include(x => x.SupplierOrderItems).ToListAsync();
-            if (!orders.Any())
-            {
-                return new { Message = "You do not have any Orders" };
-            }
-            return orders;
-        }
     }
 }

@@ -1,5 +1,5 @@
-﻿using OrderManagementSystem.Models.DTOFolder;
-using OrderManagmentSystem.Models;
+﻿using OrderManagementSystem.Data.Models;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Interfaces
 {
@@ -7,7 +7,6 @@ namespace OrderManagementSystem.Interfaces
     {
         Task<IEnumerable<Supplier>> GetAllSuppliers();
         Task<Supplier> GetSupplierById(int id);
-        Task<Supplier> UpdateSuppler(int id, UpdateSupplierDTO body);
-        Task<object> GetOrdersForSupplier(int id);
+        Task<Supplier> UpdateSuppler(int id, UpdateUserDTO body);
     }
 }

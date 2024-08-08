@@ -1,5 +1,5 @@
-﻿using OrderManagementSystem.Models.DTOFolder;
-using OrderManagmentSystem.Models;
+﻿using OrderManagementSystem.Data.Models;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Interfaces
 {

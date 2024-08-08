@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderManagmentSystem.Models
+namespace OrderManagementSystem.Data.Models
 {
     public class Retailer
     {
         [Required]
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int id { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public User user { get; set; }
+        public virtual User User { get; set; }
     }
 }

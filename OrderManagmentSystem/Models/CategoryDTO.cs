@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderManagementSystem.Models.DTOFolder
+namespace OrderManagementSystem.Models
 {
     public class CategoryDTO
     {

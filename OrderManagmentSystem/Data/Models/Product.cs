@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderManagmentSystem.Models
+namespace OrderManagementSystem.Data.Models
 {
     [Table("ProductTable")]
     public class Product
     {
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -21,16 +20,18 @@ namespace OrderManagmentSystem.Models
         [Required]
         public int StockQuantity { get; set; } = 0;
 
-
         [Required]
         public int CategoryId { get; set; }
 
         [Required]
         public int SupplierId { get; set; }
+        [ForeignKey("SupplierId")]
+        public virtual Supplier Supplier { get; set; }
 
         public string? ImageUrl { get; set; }
 
-
-
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }
+
+
 }

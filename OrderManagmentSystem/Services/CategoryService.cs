@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Data;
+using OrderManagementSystem.Data.Models;
 using OrderManagementSystem.Interfaces;
-using OrderManagementSystem.Models.DTOFolder;
-using OrderManagmentSystem.Models;
+using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Services
 {
@@ -92,7 +93,7 @@ namespace OrderManagementSystem.Services
         // Get All Supplier which have Same Category
         public async Task<List<Supplier>> GetSuppliersByCategory(int categoryId)
         {
-            var suppliers = await _db.Suppliers.Where(x => x.CategoryId == categoryId).Include(x => x.Products).Include(x => x.User).ToListAsync();
+            var suppliers = await _db.Products.Where(c => c.CategoryId == categoryId).Select(s => s.Supplier).Distinct().ToListAsync();
             if (suppliers == null)
             {
                 throw new ApplicationException("Don't have suppliers have this category");

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderManagmentSystem.Models
+namespace OrderManagementSystem.Data.Models
 {
 
     [Table("AddressTable")]
