@@ -25,8 +25,7 @@ namespace OrderManagementSystem.Data.Models
 
         [Required]
         public int SupplierId { get; set; }
-        [ForeignKey("SupplierId")]
-        public virtual Supplier Supplier { get; set; }
+
 
         public string? ImageUrl { get; set; }
 

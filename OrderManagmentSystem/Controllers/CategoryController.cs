@@ -50,19 +50,7 @@ namespace OrderManagementSystem.Controllers
             return Ok(categories);
         }
 
-        [Route("{id}")]
-        [HttpGet]
-        public async Task<IActionResult> GetCategoryById(int id)
-        {
-            var category = await _categoryService.GetCategoryById(id);
-            if (category == null)
-            {
-                return BadRequest(new { Message = "Not found this category" });
-            }
-            return Ok(category);
-        }
-
-        [Route("Supplier/{id}")]
+        [Route("{id}/Suppliers")]
         [HttpGet]
         public async Task<IActionResult> GetSuppliersByCategory(int id)
         {

@@ -19,17 +19,23 @@ namespace OrderManagementSystem.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Order>()
+          .HasMany(o => o.OrderItems)
+          .WithOne(oi => oi.Order)
+          .HasForeignKey(oi => oi.OrderId)
+          .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<OrderItem>()
             .HasOne(oi => oi.Product)
             .WithMany(p => p.OrderItems)
             .HasForeignKey(oi => oi.ProductId)
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
             .HasForeignKey(oi => oi.OrderId)
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

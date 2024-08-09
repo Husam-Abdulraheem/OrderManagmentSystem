@@ -14,8 +14,8 @@ namespace OrderManagementSystem.Data.Models
         [ForeignKey("Retailer")]
         public int RetailerId { get; set; }
 
-        public virtual Retailer? Retailer { get; set; }
+        public virtual Retailer Retailer { get; set; }
 
-        public virtual ICollection<OrderItem>? OrderItems { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

@@ -17,19 +17,36 @@ namespace OrderManagementSystem.Services
             _environment = environment;
         }
 
-        public async Task<List<Order>> GetAllOrders()
+        public async Task<List<OrderDTO>> GetAllOrders()
         {
             try
             {
-                return await _db.Orders
+                var orders = await _db.Orders
                     .Include(o => o.OrderItems)
                     .ToListAsync();
+
+                // Map the Order entities to OrderDTOs
+                var orderDTOs = orders.Select(o => new OrderDTO
+                {
+                    OrderId = o.Id,
+                    OrderDate = o.OrderDate,
+                    RetailerId = o.RetailerId,
+                    Items = o.OrderItems.Select(oi => new OrderItemDTO
+                    {
+                        ProductId = oi.ProductId,
+                        Quantity = oi.Quantity,
+                        SupplierId = oi.SupplierId
+                    }).ToList()
+                }).ToList();
+
+                return orderDTOs;
             }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error while retrieving all orders.", ex);
             }
         }
+
 
         public async Task<OrderDTO> AddOrder(OrderDTO dto)
         {
@@ -70,42 +87,33 @@ namespace OrderManagementSystem.Services
         public async Task<List<OrderDTO>> GetOrdersByRetailer(int retailerId)
         {
             var orders = await _db.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product) // Include Product if needed
-                .Where(o => o.RetailerId == retailerId)
-                .ToListAsync();
+        .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product) // تضمين Product في OrderItems
+        .Where(o => o.RetailerId == retailerId)
+        .ToListAsync();
 
-            var orderDtos = new List<OrderDTO>();
-
-            foreach (var order in orders)
+            var orderDtos = orders.Select(order => new OrderDTO
             {
-                var groupedItems = order.OrderItems
-                    .GroupBy(item => item.SupplierId)
-                    .Select(g => new
-                    {
-                        SupplierId = g.Key,
-                        Items = g.Select(item => new OrderItemDTO
-                        {
-                            ProductId = item.ProductId,
-                            SupplierId = item.SupplierId,
-                            Quantity = item.Quantity
-                        }).ToList()
-                    })
-                    .ToList();
-
-                foreach (var group in groupedItems)
+                OrderId = order.Id,
+                RetailerId = order.RetailerId,
+                OrderDate = order.OrderDate,
+                Items = order.OrderItems.Select(item => new OrderItemDTO
                 {
-                    var orderDto = new OrderDTO
+                    ProductId = item.ProductId,
+                    SupplierId = item.SupplierId,
+                    Quantity = item.Quantity,
+                    Product = new ProductDTO
                     {
-                        OrderId = order.Id,
-                        RetailerId = order.RetailerId,
-                        OrderDate = order.OrderDate,
-                        Items = group.Items
-                    };
-
-                    orderDtos.Add(orderDto);
-                }
-            }
+                        ProductId = item.Product.Id,
+                        Title = item.Product.Title,
+                        Description = item.Product.Description,
+                        Price = item.Product.Price,
+                        CategoryId = item.Product.CategoryId,
+                        SupplierId = item.Product.SupplierId,
+                        viewImage = item.Product.ImageUrl
+                    }
+                }).ToList()
+            }).ToList();
 
             return orderDtos;
         }
@@ -115,7 +123,7 @@ namespace OrderManagementSystem.Services
         public async Task<List<OrderDTO>> GetOrdersBySupplier(int supplierId)
         {
             var orderItems = await _db.OrderItems
-                .Include(oi => oi.Order)
+                .Include(oi => oi.Order).Include(oi => oi.Product)
                 .Where(oi => oi.SupplierId == supplierId)
                 .ToListAsync();
 
@@ -129,7 +137,16 @@ namespace OrderManagementSystem.Services
                     {
                         ProductId = item.ProductId,
                         SupplierId = item.SupplierId,
-                        Quantity = item.Quantity
+                        Quantity = item.Quantity,
+                        Product = new ProductDTO
+                        {
+                            ProductId = item.Product.Id,
+                            Title = item.Product.Title,
+                            Description = item.Product.Description,
+                            CategoryId = item.Product.CategoryId,
+                            Price = item.Product.Price,
+                            viewImage = item.Product.ImageUrl
+                        }
                     }).ToList()
                 }).ToList();
 

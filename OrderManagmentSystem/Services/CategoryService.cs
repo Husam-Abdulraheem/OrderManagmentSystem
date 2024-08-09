@@ -68,7 +68,7 @@ namespace OrderManagementSystem.Services
         {
             try
             {
-                var categories = await _db.Categories.Include(x => x.Products).ToListAsync();
+                var categories = await _db.Categories.ToListAsync();
                 return categories;
             }
             catch (Exception ex)
@@ -78,27 +78,15 @@ namespace OrderManagementSystem.Services
             }
         }
 
-        // Get Category By Id
-        public async Task<Category> GetCategoryById(int id)
-        {
-            var categoriesById = await _db.Categories.Include(x => x.Products).FirstOrDefaultAsync(x => x.Id == id);
-
-            if (categoriesById == null)
-            {
-                throw new ApplicationException("Can't find this category");
-            }
-            return categoriesById;
-        }
-
         // Get All Supplier which have Same Category
         public async Task<List<Supplier>> GetSuppliersByCategory(int categoryId)
         {
-            var suppliers = await _db.Products.Where(c => c.CategoryId == categoryId).Select(s => s.Supplier).Distinct().ToListAsync();
-            if (suppliers == null)
+            var supplier = await _db.Suppliers.Where(p => p.Products.Any(c => c.CategoryId == categoryId)).Include(u => u.User).ToListAsync();
+            if (supplier == null)
             {
                 throw new ApplicationException("Don't have suppliers have this category");
             }
-            return suppliers;
+            return supplier;
         }
 
         public async Task<Category> Delete(int id)

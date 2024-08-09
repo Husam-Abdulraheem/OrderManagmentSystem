@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using OrderManagementSystem.Data;
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240809133957_fixed")]
+    partial class @fixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AddressTable", (string)null);
+                    b.ToTable("AddressTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Category", b =>
@@ -73,7 +76,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryTable", (string)null);
+                    b.ToTable("CategoryTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
@@ -94,7 +97,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("RetailerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.OrderItem", b =>
@@ -125,7 +128,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Product", b =>
@@ -164,7 +167,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("ProductTable", (string)null);
+                    b.ToTable("ProductTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Retailer", b =>
@@ -182,7 +185,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Retailers", (string)null);
+                    b.ToTable("Retailers");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
@@ -203,7 +206,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.User", b =>
@@ -266,7 +269,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("AddressesId");
 
-                    b.ToTable("UserTable", (string)null);
+                    b.ToTable("UserTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
