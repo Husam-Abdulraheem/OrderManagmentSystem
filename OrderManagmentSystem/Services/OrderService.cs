@@ -123,7 +123,7 @@ namespace OrderManagementSystem.Services
         public async Task<List<OrderDTO>> GetOrdersBySupplier(int supplierId)
         {
             var orderItems = await _db.OrderItems
-                .Include(oi => oi.Order).Include(oi => oi.Product)
+                .Include(oi => oi.Order).ThenInclude(r => r.Retailer).ThenInclude(u => u.User).Include(oi => oi.Product)
                 .Where(oi => oi.SupplierId == supplierId)
                 .ToListAsync();
 
@@ -133,6 +133,16 @@ namespace OrderManagementSystem.Services
                     OrderId = group.First().OrderId,
                     RetailerId = group.First().Order.RetailerId,
                     OrderDate = group.First().Order.OrderDate,
+                    Retailer = new RetailerDTO
+                    {
+                        RetailerId = group.First().Order.Retailer.Id,
+                        RetailerFirstName = group.First().Order.Retailer.User.FirstName,
+                        RetailerLastName = group.First().Order.Retailer.User.LastName,
+                        BusinessName = group.First().Order.Retailer.User.BusinessName,
+                        RetailerPhoneNumber = group.First().Order.Retailer.User.PhoneNumber,
+                        Logo = group.First().Order.Retailer.User.LogoUrl,
+                        RetailerAddress = group.First().Order.Retailer.User.Addresses,
+                    },
                     Items = group.Select(item => new OrderItemDTO
                     {
                         ProductId = item.ProductId,
