@@ -85,7 +85,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    retailer.User.LogoUrl = "/Images/" + uniqueFileName;
+                    retailer.User.LogoUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
                 }
                 else
                 {

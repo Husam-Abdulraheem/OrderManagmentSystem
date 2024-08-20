@@ -29,7 +29,7 @@ namespace OrderManagementSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState + "kdddddddddddddddddddddddddd");
+                return BadRequest(ModelState);
             }
 
             var loginUser = await _accountService.Login(user);
@@ -53,7 +53,7 @@ namespace OrderManagementSystem.Controllers
             {
                 return BadRequest("null value");
             }
-            return Ok("Good");
+            return Ok(register);
         }
 
 
@@ -70,7 +70,7 @@ namespace OrderManagementSystem.Controllers
             {
                 return BadRequest("null value");
             }
-            return Ok("Good");
+            return Ok(register);
         }
     }
 }

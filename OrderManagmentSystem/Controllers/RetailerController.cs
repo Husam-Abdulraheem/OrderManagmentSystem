@@ -14,6 +14,7 @@ namespace OrderManagementSystem.Controllers
             _retailerService = retailerService;
         }
 
+
         [Route("{id}")]
         [HttpGet]
         public async Task<ActionResult> GetRetailerById(int id)

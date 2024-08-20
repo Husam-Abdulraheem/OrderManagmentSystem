@@ -1,45 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderManagementSystem.Data.Models
 {
     [Table("UserTable")]
-    public class User
+    public class User : IdentityUser
     {
         [Required]
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        [Required]
         [StringLength(50, MinimumLength = 3)]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         [Required]
-        public string LastName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string? LastName { get; set; }
 
         [Required]
         [StringLength(120)]
-        public string PasswordHash { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string PhoneNumber { get; set; }
-
-        [Required]
-        [StringLength(120)]
-        public string BusinessName { get; set; }
+        public string? BusinessName { get; set; }
 
         public virtual Address? Addresses { get; set; }
 
         [Required]
-        public string UserType { get; set; }
+        public string? UserType { get; set; }
 
-        [Required]
-        public string BusinessDocument { get; set; }
+        public string? BusinessDocument { get; set; }
 
         public string? LogoUrl { get; set; }
 

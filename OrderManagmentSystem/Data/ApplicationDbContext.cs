@@ -1,10 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OrderManagementSystem.Data.Models;
 
 namespace OrderManagementSystem.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Data Source=SQL8020.site4now.net;Initial Catalog=db_aaaa68_orderonline;User Id=db_aaaa68_orderonline_admin;Password=Enoah90(smarter)");
+        }
+
+
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -17,21 +26,46 @@ namespace OrderManagementSystem.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder.Entity<Order>()
+            base.OnModelCreating(builder);
+
+            List<IdentityRole> roles = new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new IdentityRole
+                {
+                    Name = "Supplier",
+                    NormalizedName = "SUPPLIER"
+                },
+                new IdentityRole
+                {
+                    Name = "Retailer",
+                    NormalizedName = "RETAILER"
+                },
+            };
+            builder.Entity<IdentityRole>().HasData(roles);
+
+            builder.Entity<IdentityUserLogin<string>>()
+            .HasKey(x => new { x.LoginProvider, x.ProviderKey });
+
+            builder.Entity<Order>()
           .HasMany(o => o.OrderItems)
           .WithOne(oi => oi.Order)
           .HasForeignKey(oi => oi.OrderId)
           .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<OrderItem>()
+            builder.Entity<OrderItem>()
             .HasOne(oi => oi.Product)
             .WithMany(p => p.OrderItems)
             .HasForeignKey(oi => oi.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Order>()
+            builder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
             .HasForeignKey(oi => oi.OrderId)

@@ -79,7 +79,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    imageUrl = "/Images/" + uniqueFileName;
+                    imageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
                 }
             }
 
@@ -146,7 +146,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    updatedProduct.ImageUrl = "/Images/" + uniqueFileName;
+                    updatedProduct.ImageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
                 }
                 else
                 {

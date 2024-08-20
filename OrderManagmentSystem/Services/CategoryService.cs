@@ -42,7 +42,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    imageUrl = "/Images/" + uniqueFileName;
+                    imageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
                 }
             }
 
