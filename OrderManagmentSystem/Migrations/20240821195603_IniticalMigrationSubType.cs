@@ -7,7 +7,7 @@
 namespace OrderManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class businessDocNotRequi : Migration
+    public partial class IniticalMigrationSubType : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,34 +15,32 @@ namespace OrderManagementSystem.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "39366ad4-dd03-4b14-a856-10091c847d80");
+                keyValue: "704933b7-8bf5-4f2e-a9ae-f5646ce8a194");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "b072b06a-ece6-4f96-a2c0-1b17861de828");
+                keyValue: "9f2d1c8c-a0b7-4142-abf1-a5b97d2c91fc");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "c92f59c2-887b-4d9e-9e6f-0055978ff6b0");
+                keyValue: "d0449676-2b5e-4c95-96ee-496bc0394d7c");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "BusinessDocument",
-                table: "AspNetUsers",
+            migrationBuilder.AddColumn<string>(
+                name: "Type",
+                table: "Subscriptions",
                 type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                nullable: true);
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "59d21fe9-26f2-465c-b772-cdd45013df01", null, "Retailer", "RETAILER" },
-                    { "799bf4b8-0bbd-4208-af55-88370e852a28", null, "Admin", "ADMIN" },
-                    { "ec034287-285f-4cd1-bfd6-8260014ce570", null, "Supplier", "SUPPLIER" }
+                    { "12e3e059-57ab-4561-9b89-6d628bc2120c", null, "Admin", "ADMIN" },
+                    { "bf062f97-b71b-416c-9b9d-c09d4f9690dd", null, "Supplier", "SUPPLIER" },
+                    { "d3d10be7-dcfe-4ce2-906d-6e0bc6f26183", null, "Retailer", "RETAILER" }
                 });
         }
 
@@ -52,36 +50,30 @@ namespace OrderManagementSystem.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "59d21fe9-26f2-465c-b772-cdd45013df01");
+                keyValue: "12e3e059-57ab-4561-9b89-6d628bc2120c");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "799bf4b8-0bbd-4208-af55-88370e852a28");
+                keyValue: "bf062f97-b71b-416c-9b9d-c09d4f9690dd");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "ec034287-285f-4cd1-bfd6-8260014ce570");
+                keyValue: "d3d10be7-dcfe-4ce2-906d-6e0bc6f26183");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "BusinessDocument",
-                table: "AspNetUsers",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
+            migrationBuilder.DropColumn(
+                name: "Type",
+                table: "Subscriptions");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "39366ad4-dd03-4b14-a856-10091c847d80", null, "Retailer", "RETAILER" },
-                    { "b072b06a-ece6-4f96-a2c0-1b17861de828", null, "Supplier", "SUPPLIER" },
-                    { "c92f59c2-887b-4d9e-9e6f-0055978ff6b0", null, "Admin", "ADMIN" }
+                    { "704933b7-8bf5-4f2e-a9ae-f5646ce8a194", null, "Supplier", "SUPPLIER" },
+                    { "9f2d1c8c-a0b7-4142-abf1-a5b97d2c91fc", null, "Admin", "ADMIN" },
+                    { "d0449676-2b5e-4c95-96ee-496bc0394d7c", null, "Retailer", "RETAILER" }
                 });
         }
     }

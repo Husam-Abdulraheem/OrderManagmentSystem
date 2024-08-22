@@ -17,7 +17,7 @@ namespace OrderManagementSystem.Models
         public string? PhoneNumber { get; set; }
         [Required]
         public string? BusinessName { get; set; }
-        [Required]
+
         public IFormFile? BusinessDocument { get; set; }
 
     }

@@ -14,6 +14,6 @@ namespace OrderManagementSystem.Data.Models
 
         public virtual ICollection<Product>? Products { get; set; }
 
-        public string? Subscription { get; set; }
+        public Subscription? Subscription { get; set; }
     }
 }

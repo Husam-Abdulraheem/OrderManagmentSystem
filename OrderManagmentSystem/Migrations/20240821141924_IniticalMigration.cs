@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace OrderManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitcalMigration : Migration
+    public partial class IniticalMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,7 +68,7 @@ namespace OrderManagementSystem.Migrations
                     BusinessName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     AddressesId = table.Column<int>(type: "int", nullable: true),
                     UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessDocument = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BusinessDocument = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     IsVerified = table.Column<bool>(type: "bit", nullable: false),
@@ -323,6 +325,16 @@ namespace OrderManagementSystem.Migrations
                         principalTable: "Suppliers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "495bc3b0-8e8a-496d-b412-f6a90790a744", null, "Admin", "ADMIN" },
+                    { "84283f5b-23d3-43d2-aaea-4363ee91ef5a", null, "Supplier", "SUPPLIER" },
+                    { "b51ad1fc-4859-41de-a8f6-f5a6cd499314", null, "Retailer", "RETAILER" }
                 });
 
             migrationBuilder.CreateIndex(

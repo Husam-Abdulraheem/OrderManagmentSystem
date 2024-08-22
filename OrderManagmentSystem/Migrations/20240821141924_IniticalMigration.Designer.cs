@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using OrderManagementSystem.Data;
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240821141924_IniticalMigration")]
+    partial class IniticalMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,19 +54,19 @@ namespace OrderManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2731d248-d386-49c1-8ef8-449350f83544",
+                            Id = "495bc3b0-8e8a-496d-b412-f6a90790a744",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "35d8e4c7-a6b0-4379-992e-0694aaacd177",
+                            Id = "84283f5b-23d3-43d2-aaea-4363ee91ef5a",
                             Name = "Supplier",
                             NormalizedName = "SUPPLIER"
                         },
                         new
                         {
-                            Id = "e1873dc3-9401-4800-a109-e79d79847fd4",
+                            Id = "b51ad1fc-4859-41de-a8f6-f5a6cd499314",
                             Name = "Retailer",
                             NormalizedName = "RETAILER"
                         });
@@ -205,7 +208,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AddressTable", (string)null);
+                    b.ToTable("AddressTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Category", b =>
@@ -226,7 +229,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryTable", (string)null);
+                    b.ToTable("CategoryTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Order", b =>
@@ -247,7 +250,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("RetailerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.OrderItem", b =>
@@ -278,7 +281,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Product", b =>
@@ -317,7 +320,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("ProductTable", (string)null);
+                    b.ToTable("ProductTable");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Retailer", b =>
@@ -336,38 +339,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Retailers", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagementSystem.Data.Models.Subscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SupplierId")
-                        .IsUnique();
-
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Retailers");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
@@ -378,6 +350,9 @@ namespace OrderManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Subscription")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -386,7 +361,7 @@ namespace OrderManagementSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("OrderManagementSystem.Data.Models.User", b =>
@@ -604,17 +579,6 @@ namespace OrderManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OrderManagementSystem.Data.Models.Subscription", b =>
-                {
-                    b.HasOne("OrderManagementSystem.Data.Models.Supplier", "Supplier")
-                        .WithOne("Subscription")
-                        .HasForeignKey("OrderManagementSystem.Data.Models.Subscription", "SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
-                });
-
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
                 {
                     b.HasOne("OrderManagementSystem.Data.Models.User", "User")
@@ -653,8 +617,6 @@ namespace OrderManagementSystem.Migrations
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
                 {
                     b.Navigation("Products");
-
-                    b.Navigation("Subscription");
                 });
 #pragma warning restore 612, 618
         }

@@ -42,33 +42,36 @@ namespace OrderManagementSystem.Controllers
 
         [Route("Register/Supplier")]
         [HttpPost]
-        public async Task<ActionResult> RegisterSuppliers(RegisterDTO registerDto)
+        public async Task<IActionResult> RegisterSuppliers([FromForm] RegisterDTO registerDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("One or more fileds wrong");
+                return BadRequest("One or more fields are incorrect.");
             }
-            var register = await _accountService.RegisterSupplier(registerDto);
-            if (register == null)
+
+            var registerResult = await _accountService.RegisterSupplier(registerDto);
+            if (registerResult == null)
             {
-                return BadRequest("null value");
+                return BadRequest("Registration failed. Please check your input and try again.");
             }
-            return Ok(register);
+
+            return Ok(registerResult);
         }
+
 
 
         [Route("Register/Retailer")]
         [HttpPost]
-        public async Task<ActionResult> RegisterRetailers(RegisterDTO registerDto)
+        public async Task<ActionResult> RegisterRetailers([FromForm] RegisterDTO registerDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("One or more fileds wrong");
+                return BadRequest("One or more fields are incorrect.");
             }
             var register = await _accountService.RegisterRetailer(registerDto);
             if (register == null)
             {
-                return BadRequest("null value");
+                return BadRequest("Registration failed. Please check your input and try again.");
             }
             return Ok(register);
         }

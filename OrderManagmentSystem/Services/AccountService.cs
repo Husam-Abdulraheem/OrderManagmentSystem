@@ -35,7 +35,7 @@ namespace OrderManagementSystem.Services
                 return (new { Message = "Invalid Email!" });
 
 
-            if (!BCrypt.Net.BCrypt.Verify(usersAuth.Password, user.PasswordHash))
+            if (!await _userManager.CheckPasswordAsync(user, usersAuth.Password))
                 return (new { Message = "Email not found and/or password incorrect" });
 
 
@@ -60,17 +60,18 @@ namespace OrderManagementSystem.Services
 
         public async Task<object> RegisterRetailer([FromForm] RegisterDTO registerDto)
         {
-            var existingUser = _db.Users.FirstOrDefault(x => x.Email == registerDto.Email);
+            // Check if the user already exists
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
                 throw new ArgumentException("Email is already registered.");
             }
 
+            // Image processing if present
             string document = null;
             if (registerDto.BusinessDocument != null)
             {
                 var resizedImage = await ImageService.ResizeAndCompressImage(registerDto.BusinessDocument);
-
                 if (resizedImage != null)
                 {
                     string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
@@ -85,19 +86,18 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    document = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
+                    document = $"https://husamta-001-site1.htempurl.com/Images/{uniqueFileName}";
                 }
             }
 
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
-
+            // Create User Object
             User addUser = new User
             {
+                UserName = registerDto.Email,
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                PasswordHash = hashedPassword,
                 PhoneNumber = registerDto.PhoneNumber,
                 UserType = "Retailer",
                 BusinessName = registerDto.BusinessName,
@@ -107,40 +107,53 @@ namespace OrderManagementSystem.Services
                 LogoUrl = null
             };
 
-            Retailer retailer = new Retailer
+            using (var transaction = await _db.Database.BeginTransactionAsync())
             {
-                User = addUser,
-            };
-
-
-            var createdUser = await _userManager.CreateAsync(addUser, registerDto.Password);
-            if (createdUser.Succeeded)
-            {
-                var roleResult = await _userManager.AddToRoleAsync(addUser, "Retailer");
-                if (roleResult.Succeeded)
+                try
                 {
-                    return (new { Message = "You have successfully registered." });
+                    // Create a Retailer object and associate it with the user.
+                    Retailer retailer = new Retailer
+                    {
+                        User = addUser,
+                    };
+
+                    // Add User Using Identity
+                    // Password encryption
+                    var createdUser = await _userManager.CreateAsync(addUser, registerDto.Password);
+                    if (!createdUser.Succeeded)
+                    {
+                        var errors = string.Join(", ", createdUser.Errors.Select(e => e.Description));
+                        throw new Exception($"User creation failed: {errors}");
+                    }
+
+                    // Add Role
+                    var roleResult = await _userManager.AddToRoleAsync(addUser, "Retailer");
+                    if (!roleResult.Succeeded)
+                    {
+                        var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Role assignment failed: {errors}");
+                    }
+
+                    // Add Retailer Data To Database
+                    _db.Retailers.Add(retailer);
+                    await _db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    // Return registration result with Token and Email
+                    return new UserTokenDTO
+                    {
+                        Email = addUser.Email,
+                        Token = _tokenService.GenerateJwtToken(addUser)
+                    };
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new ArgumentException("Error when create User");
+                    await transaction.RollbackAsync();
+                    throw new Exception("Transaction failed: " + ex.Message, ex);
                 }
             }
-            _db.Retailers.Add(retailer);
-            await _db.SaveChangesAsync();
-            return new UserTokenDTO
-            {
-                Email = addUser.Email,
-                Token = _tokenService.GenerateJwtToken(addUser)
-            };
-
         }
-
-
-
-
-
-
 
 
 
@@ -152,17 +165,18 @@ namespace OrderManagementSystem.Services
 
         public async Task<object> RegisterSupplier([FromForm] RegisterDTO registerDto)
         {
-            var existingUser = _db.Users.FirstOrDefault(x => x.Email == registerDto.Email);
+            // Check if the user already exists
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
                 throw new ArgumentException("Email is already registered.");
             }
 
+            // Image processing if present
             string document = null;
             if (registerDto.BusinessDocument != null)
             {
                 var resizedImage = await ImageService.ResizeAndCompressImage(registerDto.BusinessDocument);
-
                 if (resizedImage != null)
                 {
                     string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
@@ -177,19 +191,19 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    document = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
+                    document = $"https://husamta-001-site1.htempurl.com/Images/{uniqueFileName}";
                 }
             }
 
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
 
+            // Create User Object
             User addUser = new User
             {
+                UserName = registerDto.Email,
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                PasswordHash = hashedPassword,
                 PhoneNumber = registerDto.PhoneNumber,
                 UserType = "Supplier",
                 BusinessName = registerDto.BusinessName,
@@ -199,35 +213,51 @@ namespace OrderManagementSystem.Services
                 LogoUrl = null
             };
 
+            // Add User Using Identity
+            // Password encryption
+            var createdUser = await _userManager.CreateAsync(addUser, registerDto.Password);
+            if (!createdUser.Succeeded)
+            {
+                // Collect errors in one message
+                var errors = string.Join(", ", createdUser.Errors.Select(e => e.Description));
+                throw new Exception($"Error when creating user: {errors}");
+            }
+
+            // Add Role
+            var roleResult = await _userManager.AddToRoleAsync(addUser, "Supplier");
+            if (!roleResult.Succeeded)
+            {
+                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                throw new Exception($"Error when assigning role to the user: {errors}");
+            }
+
+            // Create a resource object and associate it with a user.
             Supplier supplier = new Supplier
             {
                 User = addUser,
-                Subscription = "none",
-
+                Subscription = null,
             };
-            var createdUser = await _userManager.CreateAsync(addUser, registerDto.Password);
 
-            if (createdUser.Succeeded)
+            // Add Supplier to database
+            try
             {
-                var roleResult = await _userManager.AddToRoleAsync(addUser, "Supplier");
-                if (roleResult.Succeeded)
-                {
-                    return (new { Message = "You have successfully registered." });
-
-                }
-                else
-                {
-                    throw new ArgumentException("Error when create User");
-                }
+                _db.Suppliers.Add(supplier);
+                await _db.SaveChangesAsync();
             }
-            _db.Suppliers.Add(supplier);
-            await _db.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                throw new Exception("Transaction failed: An error occurred while saving the supplier data.", ex);
+            }
+
+            // Return registration result with token
             return new UserTokenDTO
             {
                 Email = addUser.Email,
                 Token = _tokenService.GenerateJwtToken(addUser)
             };
         }
+
+
 
     }
 }

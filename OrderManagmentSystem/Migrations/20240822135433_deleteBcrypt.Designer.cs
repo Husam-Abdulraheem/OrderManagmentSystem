@@ -12,8 +12,8 @@ using OrderManagementSystem.Data;
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240816152953_InitcalMigration")]
-    partial class InitcalMigration
+    [Migration("20240822135433_deleteBcrypt")]
+    partial class deleteBcrypt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,26 @@ namespace OrderManagementSystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2731d248-d386-49c1-8ef8-449350f83544",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "35d8e4c7-a6b0-4379-992e-0694aaacd177",
+                            Name = "Supplier",
+                            NormalizedName = "SUPPLIER"
+                        },
+                        new
+                        {
+                            Id = "e1873dc3-9401-4800-a109-e79d79847fd4",
+                            Name = "Retailer",
+                            NormalizedName = "RETAILER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -322,7 +342,7 @@ namespace OrderManagementSystem.Migrations
                     b.ToTable("Retailers");
                 });
 
-            modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -330,8 +350,36 @@ namespace OrderManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Subscription")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId")
+                        .IsUnique();
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -356,7 +404,6 @@ namespace OrderManagementSystem.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("BusinessDocument")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BusinessName")
@@ -560,6 +607,17 @@ namespace OrderManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("OrderManagementSystem.Data.Models.Subscription", b =>
+                {
+                    b.HasOne("OrderManagementSystem.Data.Models.Supplier", "Supplier")
+                        .WithOne("Subscription")
+                        .HasForeignKey("OrderManagementSystem.Data.Models.Subscription", "SupplierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
+                });
+
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
                 {
                     b.HasOne("OrderManagementSystem.Data.Models.User", "User")
@@ -598,6 +656,8 @@ namespace OrderManagementSystem.Migrations
             modelBuilder.Entity("OrderManagementSystem.Data.Models.Supplier", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("Subscription");
                 });
 #pragma warning restore 612, 618
         }
