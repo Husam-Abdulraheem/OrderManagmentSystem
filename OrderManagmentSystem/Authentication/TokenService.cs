@@ -18,7 +18,7 @@ namespace OrderManagementSystem.Authentication
         }
 
 
-        public string GenerateJwtToken(User user)
+        public string GenerateJwtToken(int? roleId, User user)
         {
 
 
@@ -26,6 +26,7 @@ namespace OrderManagementSystem.Authentication
             {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Typ, user.UserType),
+                new Claim("RoleId", roleId.ToString())
             };
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
 

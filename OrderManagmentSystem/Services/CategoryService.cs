@@ -81,7 +81,7 @@ namespace OrderManagementSystem.Services
         // Get All Supplier which have Same Category
         public async Task<List<Supplier>> GetSuppliersByCategory(int categoryId)
         {
-            var supplier = await _db.Suppliers.Where(p => p.Products.Any(c => c.CategoryId == categoryId)).Include(u => u.User).ToListAsync();
+            var supplier = await _db.Suppliers.Where(p => p.Products.Any(c => c.CategoryId == categoryId)).Include(p => p.Products).Include(u => u.User).ToListAsync();
             if (supplier == null)
             {
                 throw new ApplicationException("Don't have suppliers have this category");

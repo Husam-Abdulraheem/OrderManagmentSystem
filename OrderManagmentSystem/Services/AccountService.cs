@@ -38,11 +38,14 @@ namespace OrderManagementSystem.Services
             if (!await _userManager.CheckPasswordAsync(user, usersAuth.Password))
                 return (new { Message = "Email not found and/or password incorrect" });
 
+            var supplier = await _db.Suppliers.FirstOrDefaultAsync(x => x.User.Id == user.Id);
+            var retailer = await _db.Retailers.FirstOrDefaultAsync(x => x.User.Id == user.Id);
+
+            int? roleId = supplier?.Id ?? retailer?.Id;
 
             return new UserTokenDTO
             {
-                Email = user.Email,
-                Token = _tokenService.GenerateJwtToken(user),
+                Token = _tokenService.GenerateJwtToken(roleId, user),
             };
         }
 
@@ -117,6 +120,7 @@ namespace OrderManagementSystem.Services
                         User = addUser,
                     };
 
+
                     // Add User Using Identity
                     // Password encryption
                     var createdUser = await _userManager.CreateAsync(addUser, registerDto.Password);
@@ -140,11 +144,13 @@ namespace OrderManagementSystem.Services
 
                     await transaction.CommitAsync();
 
+                    var retailerId = await _db.Retailers.FirstOrDefaultAsync(x => x.User.Id == addUser.Id);
+                    int? supplier = null;
+                    int? roleId = supplier ?? retailerId?.Id;
                     // Return registration result with Token and Email
                     return new UserTokenDTO
                     {
-                        Email = addUser.Email,
-                        Token = _tokenService.GenerateJwtToken(addUser)
+                        Token = _tokenService.GenerateJwtToken(roleId, addUser)
                     };
                 }
                 catch (Exception ex)
@@ -237,7 +243,6 @@ namespace OrderManagementSystem.Services
                 User = addUser,
                 Subscription = null,
             };
-
             // Add Supplier to database
             try
             {
@@ -250,10 +255,12 @@ namespace OrderManagementSystem.Services
             }
 
             // Return registration result with token
+            var supplierId = await _db.Suppliers.FirstOrDefaultAsync(x => x.User.Id == addUser.Id);
+            int? retailer = null;
+            int? roleId = supplierId?.Id ?? retailer;
             return new UserTokenDTO
             {
-                Email = addUser.Email,
-                Token = _tokenService.GenerateJwtToken(addUser)
+                Token = _tokenService.GenerateJwtToken(roleId, addUser)
             };
         }
 
