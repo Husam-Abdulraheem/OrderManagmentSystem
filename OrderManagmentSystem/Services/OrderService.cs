@@ -88,7 +88,7 @@ namespace OrderManagementSystem.Services
         {
             var orders = await _db.Orders
         .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Product) // تضمين Product في OrderItems
+            .ThenInclude(oi => oi.Product) // Include Product in OrderItems
         .Where(o => o.RetailerId == retailerId)
         .ToListAsync();
 
@@ -123,7 +123,7 @@ namespace OrderManagementSystem.Services
         public async Task<List<OrderDTO>> GetOrdersBySupplier(int supplierId)
         {
             var orderItems = await _db.OrderItems
-                .Include(oi => oi.Order).ThenInclude(r => r.Retailer).ThenInclude(u => u.User).Include(oi => oi.Product)
+                .Include(oi => oi.Order).ThenInclude(r => r.Retailer).ThenInclude(u => u.User).ThenInclude(a => a.Addresses).Include(oi => oi.Product)
                 .Where(oi => oi.SupplierId == supplierId)
                 .ToListAsync();
 
@@ -148,6 +148,7 @@ namespace OrderManagementSystem.Services
                         ProductId = item.ProductId,
                         SupplierId = item.SupplierId,
                         Quantity = item.Quantity,
+                        Total = SumPrice(item.Product.Price, item.Quantity),
                         Product = new ProductDTO
                         {
                             ProductId = item.Product.Id,
@@ -161,6 +162,13 @@ namespace OrderManagementSystem.Services
                 }).ToList();
 
             return orderDtos;
+        }
+
+        private float SumPrice(float price, int quantity)
+        {
+            float sum = 0;
+            sum = price * quantity;
+            return sum;
         }
     }
 }

@@ -18,6 +18,8 @@ namespace OrderManagementSystem.Data.Models
 
         public int Quantity { get; set; }
 
+        public float Total { get; set; }
+
         public int SupplierId { get; set; }
         [ForeignKey("SupplierId")]
         public virtual Supplier? Supplier { get; set; }

@@ -6,5 +6,6 @@
         public virtual ProductDTO? Product { get; set; }
         public int SupplierId { get; set; }
         public int Quantity { get; set; }
+        public float Total { get; set; }
     }
 }
