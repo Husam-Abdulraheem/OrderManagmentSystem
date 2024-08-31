@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000")
+                          policy.WithOrigins("https://supplier-application.vercel.app", "http://localhost:3000")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                       });
@@ -117,9 +118,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseResponseCompression();
+
+app.Use(async (context, next) =>
+{
+    context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 20 * 1024 * 1024; // 20MB
+    await next();
+});
 
 app.UseHttpsRedirection();
 

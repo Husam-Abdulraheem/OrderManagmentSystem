@@ -155,7 +155,7 @@ namespace OrderManagementSystem.Services
             }
             else
             {
-                updatedProduct.ImageUrl = null;
+                updatedProduct.ImageUrl = updatedProduct.ImageUrl;
             }
 
             _db.Products.Update(updatedProduct);
