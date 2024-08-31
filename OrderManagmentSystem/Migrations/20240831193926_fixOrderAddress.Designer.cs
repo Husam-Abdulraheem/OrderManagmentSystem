@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using OrderManagementSystem.Data;
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240831193926_fixOrderAddress")]
+    partial class fixOrderAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,19 +54,19 @@ namespace OrderManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0f5b672c-42e0-445b-ae2e-86ffcc75a929",
+                            Id = "0e74809e-0011-46cd-844f-7a48128798b9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "eeaa5ba5-b66b-4091-96c1-1aa0751de098",
+                            Id = "c6760256-282c-483a-a703-75dfd3cd7d58",
                             Name = "Supplier",
                             NormalizedName = "SUPPLIER"
                         },
                         new
                         {
-                            Id = "7bc64fc5-0114-43ed-9e14-7a1e2485a203",
+                            Id = "c5694785-63bb-41d9-ab22-98e7abc5fb77",
                             Name = "Retailer",
                             NormalizedName = "RETAILER"
                         });
@@ -242,9 +245,6 @@ namespace OrderManagementSystem.Migrations
 
                     b.Property<int>("RetailerId")
                         .HasColumnType("int");
-
-                    b.Property<float>("TotalCost")
-                        .HasColumnType("real");
 
                     b.HasKey("Id");
 

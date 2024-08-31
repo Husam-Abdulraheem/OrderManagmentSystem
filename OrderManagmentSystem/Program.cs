@@ -126,7 +126,7 @@ else
     app.UseHsts();
 }
 
-app.UseResponseCompression();
+//app.UseResponseCompression();
 
 app.Use(async (context, next) =>
 {

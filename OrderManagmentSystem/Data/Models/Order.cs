@@ -11,6 +11,8 @@ namespace OrderManagementSystem.Data.Models
 
         public DateTime OrderDate { get; set; }
 
+        public float TotalDeal { get; set; }
+
         [ForeignKey("Retailer")]
         public int RetailerId { get; set; }
 

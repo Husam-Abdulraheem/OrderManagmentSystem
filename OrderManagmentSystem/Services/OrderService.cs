@@ -22,23 +22,30 @@ namespace OrderManagementSystem.Services
             try
             {
                 var orders = await _db.Orders
-                    .Include(o => o.OrderItems)
+                    .Include(o => o.OrderItems).ThenInclude(p => p.Product)
                     .ToListAsync();
-
                 // Map the Order entities to OrderDTOs
-                var orderDTOs = orders.Select(o => new OrderDTO
+                var orderDTOs = orders.Select(o =>
                 {
-                    OrderId = o.Id,
-                    OrderDate = o.OrderDate,
-                    RetailerId = o.RetailerId,
-                    Items = o.OrderItems.Select(oi => new OrderItemDTO
+                    var Items = o.OrderItems.Select(oi => new OrderItemDTO
                     {
                         ProductId = oi.ProductId,
                         Quantity = oi.Quantity,
-                        SupplierId = oi.SupplierId
-                    }).ToList()
-                }).ToList();
+                        SupplierId = oi.SupplierId,
+                        Total = SumPrice(oi.Product.Price, oi.Quantity)
+                    }).ToList();
 
+                    var totalDeal = Items.Sum(t => t.Total);
+
+                    return new OrderDTO
+                    {
+                        OrderId = o.Id,
+                        OrderDate = o.OrderDate,
+                        RetailerId = o.RetailerId,
+                        TotalDeal = totalDeal,
+                        Items = Items
+                    };
+                }).ToList();
                 return orderDTOs;
             }
             catch (Exception ex)
@@ -92,16 +99,14 @@ namespace OrderManagementSystem.Services
         .Where(o => o.RetailerId == retailerId)
         .ToListAsync();
 
-            var orderDtos = orders.Select(order => new OrderDTO
+            var orderDtos = orders.Select(order =>
             {
-                OrderId = order.Id,
-                RetailerId = order.RetailerId,
-                OrderDate = order.OrderDate,
-                Items = order.OrderItems.Select(item => new OrderItemDTO
+                var Items = order.OrderItems.Select(item => new OrderItemDTO
                 {
                     ProductId = item.ProductId,
                     SupplierId = item.SupplierId,
                     Quantity = item.Quantity,
+                    Total = SumPrice(item.Product.Price, item.Quantity),
                     Product = new ProductDTO
                     {
                         ProductId = item.Product.Id,
@@ -112,9 +117,18 @@ namespace OrderManagementSystem.Services
                         SupplierId = item.Product.SupplierId,
                         viewImage = item.Product.ImageUrl
                     }
-                }).ToList()
-            }).ToList();
+                }).ToList();
 
+                var totalDeal = Items.Sum(t => t.Total);
+                return new OrderDTO
+                {
+                    OrderId = order.Id,
+                    RetailerId = order.RetailerId,
+                    OrderDate = order.OrderDate,
+                    TotalDeal = totalDeal,
+                    Items = Items,
+                };
+            }).ToList();
             return orderDtos;
         }
 
@@ -128,22 +142,9 @@ namespace OrderManagementSystem.Services
                 .ToListAsync();
 
             var orderDtos = orderItems.GroupBy(oi => oi.OrderId)
-                .Select(group => new OrderDTO
+                .Select(group =>
                 {
-                    OrderId = group.First().OrderId,
-                    RetailerId = group.First().Order.RetailerId,
-                    OrderDate = group.First().Order.OrderDate,
-                    Retailer = new RetailerDTO
-                    {
-                        RetailerId = group.First().Order.Retailer.Id,
-                        RetailerFirstName = group.First().Order.Retailer.User.FirstName,
-                        RetailerLastName = group.First().Order.Retailer.User.LastName,
-                        BusinessName = group.First().Order.Retailer.User.BusinessName,
-                        RetailerPhoneNumber = group.First().Order.Retailer.User.PhoneNumber,
-                        Logo = group.First().Order.Retailer.User.LogoUrl,
-                        RetailerAddress = group.First().Order.Retailer.User.Addresses,
-                    },
-                    Items = group.Select(item => new OrderItemDTO
+                    var Items = group.Select(item => new OrderItemDTO
                     {
                         ProductId = item.ProductId,
                         SupplierId = item.SupplierId,
@@ -158,7 +159,27 @@ namespace OrderManagementSystem.Services
                             Price = item.Product.Price,
                             viewImage = item.Product.ImageUrl
                         }
-                    }).ToList()
+                    }).ToList();
+
+                    var totalDeal = Items.Sum(t => t.Total);
+                    return new OrderDTO
+                    {
+                        OrderId = group.First().OrderId,
+                        RetailerId = group.First().Order.RetailerId,
+                        OrderDate = group.First().Order.OrderDate,
+                        TotalDeal = totalDeal,
+                        Items = Items,
+                        Retailer = new RetailerDTO
+                        {
+                            RetailerId = group.First().Order.Retailer.Id,
+                            RetailerFirstName = group.First().Order.Retailer.User.FirstName,
+                            RetailerLastName = group.First().Order.Retailer.User.LastName,
+                            BusinessName = group.First().Order.Retailer.User.BusinessName,
+                            RetailerPhoneNumber = group.First().Order.Retailer.User.PhoneNumber,
+                            Logo = group.First().Order.Retailer.User.LogoUrl,
+                            RetailerAddress = group.First().Order.Retailer.User.Addresses,
+                        },
+                    };
                 }).ToList();
 
             return orderDtos;
@@ -166,9 +187,7 @@ namespace OrderManagementSystem.Services
 
         private float SumPrice(float price, int quantity)
         {
-            float sum = 0;
-            sum = price * quantity;
-            return sum;
+            return price * quantity;
         }
     }
 }
