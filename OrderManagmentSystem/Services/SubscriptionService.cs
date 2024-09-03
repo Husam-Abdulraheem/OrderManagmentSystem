@@ -67,9 +67,9 @@ namespace OrderManagementSystem.Services
 
             supplier.Subscription.StartDate = DateTime.UtcNow;
             supplier.Subscription.EndDate =
-                subType.ToLower() == "month" ? DateTime.UtcNow.AddMonths(1) :
-                subType.ToLower() == "threemonth" ? DateTime.UtcNow.AddMonths(3) :
-                subType.ToLower() == "sixmonth" ? DateTime.UtcNow.AddMonths(6) :
+                subType.ToLower() == "monthly" ? DateTime.UtcNow.AddMonths(1) :
+                subType.ToLower() == "Quarterly" ? DateTime.UtcNow.AddMonths(3) :
+                subType.ToLower() == "biannual" ? DateTime.UtcNow.AddMonths(6) :
                 DateTime.UtcNow.AddYears(1);
             supplier.Subscription.IsActive = true;
 
@@ -96,15 +96,23 @@ namespace OrderManagementSystem.Services
                 return new { Message = "You already have Subscription" };
             }
 
+            if (type.ToLower() != "monthly" && type.ToLower() != "quarterly" &&
+                type.ToLower() != "biannual" && type.ToLower() != "yearly")
+            {
+                throw new ArgumentException("Invalid subscription type");
+            }
+
             var subscription = new Subscription
             {
                 SupplierId = supplier.Id,
                 StartDate = DateTime.UtcNow,
                 EndDate =
-                type.ToLower() == "month" ? DateTime.UtcNow.AddMonths(1) :
-                type.ToLower() == "threemonth" ? DateTime.UtcNow.AddMonths(3) :
-                type.ToLower() == "sixmonth" ? DateTime.UtcNow.AddMonths(6) :
-                DateTime.UtcNow.AddYears(1),
+            type.ToLower() == "monthly" ? DateTime.UtcNow.AddMonths(1) :
+            type.ToLower() == "Quarterly" ? DateTime.UtcNow.AddMonths(3) :
+            type.ToLower() == "biannual" ? DateTime.UtcNow.AddMonths(6) :
+            type.ToLower() == "yearly" ? DateTime.UtcNow.AddYears(1) :
+            DateTime.UtcNow,
+
                 IsActive = true,
                 Type = type
             };
