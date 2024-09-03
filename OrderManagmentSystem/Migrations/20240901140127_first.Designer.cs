@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagementSystem.Data;
 
@@ -11,9 +12,11 @@ using OrderManagementSystem.Data;
 namespace OrderManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240901140127_first")]
+    partial class first
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,19 +54,19 @@ namespace OrderManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "73a0da53-6b80-449a-af01-5477aa3260e2",
+                            Id = "01c53e74-2919-466b-9a07-c6ab603ff31c",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "0df76dfd-9f61-4b60-8d29-133384e7f817",
+                            Id = "5c43c416-4011-4f31-8073-a1b99ddd6a31",
                             Name = "Supplier",
                             NormalizedName = "SUPPLIER"
                         },
                         new
                         {
-                            Id = "1c428db9-0c25-490c-9349-487f61ecbc08",
+                            Id = "c67c165c-01d0-46e1-88b8-3d81780e7d5b",
                             Name = "Retailer",
                             NormalizedName = "RETAILER"
                         });

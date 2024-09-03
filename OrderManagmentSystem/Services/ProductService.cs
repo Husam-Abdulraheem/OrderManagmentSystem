@@ -67,7 +67,7 @@ namespace OrderManagementSystem.Services
 
                 if (resizedImage != null)
                 {
-                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images", "ProductImg");
                     if (!Directory.Exists(imagesFolderPath))
                         Directory.CreateDirectory(imagesFolderPath);
 
@@ -79,7 +79,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    imageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
+                    imageUrl = "https://growsoft-001-site1.htempurl.com/Images/ProductImg" + uniqueFileName;
                 }
             }
 
@@ -134,7 +134,7 @@ namespace OrderManagementSystem.Services
 
                 if (resizedImage != null)
                 {
-                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images", "ProductImg");
                     if (!Directory.Exists(imagesFolderPath))
                         Directory.CreateDirectory(imagesFolderPath);
 
@@ -146,7 +146,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    updatedProduct.ImageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
+                    updatedProduct.ImageUrl = "https://growsoft-001-site1.htempurl.com/Images/ProductImg/" + uniqueFileName;
                 }
                 else
                 {

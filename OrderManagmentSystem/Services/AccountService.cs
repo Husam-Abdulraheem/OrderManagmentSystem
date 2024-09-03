@@ -77,7 +77,7 @@ namespace OrderManagementSystem.Services
                 var resizedImage = await ImageService.ResizeAndCompressImage(registerDto.BusinessDocument);
                 if (resizedImage != null)
                 {
-                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images", "RDocuments");
                     if (!Directory.Exists(imagesFolderPath))
                         Directory.CreateDirectory(imagesFolderPath);
 
@@ -89,7 +89,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    document = $"https://husamta-001-site1.htempurl.com/Images/{uniqueFileName}";
+                    document = $"https://growsoft-001-site1.htempurl.com/Images/RDocuments/{uniqueFileName}";
                 }
             }
 
@@ -185,7 +185,7 @@ namespace OrderManagementSystem.Services
                 var resizedImage = await ImageService.ResizeAndCompressImage(registerDto.BusinessDocument);
                 if (resizedImage != null)
                 {
-                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images", "SDocuments");
                     if (!Directory.Exists(imagesFolderPath))
                         Directory.CreateDirectory(imagesFolderPath);
 
@@ -197,7 +197,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    document = $"https://husamta-001-site1.htempurl.com/Images/{uniqueFileName}";
+                    document = $"https://growsoft-001-site1.htempurl.com/Images/SDocuments/{uniqueFileName}";
                 }
             }
 

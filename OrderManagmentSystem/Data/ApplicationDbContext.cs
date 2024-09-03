@@ -9,7 +9,7 @@ namespace OrderManagementSystem.Data
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=SQL8020.site4now.net;Initial Catalog=db_aaaa68_orderonline;User Id=db_aaaa68_orderonline_admin;Password=Enoah90(smarter)");
+            optionsBuilder.UseSqlServer("Data Source=SQL8001.site4now.net;Initial Catalog=db_aacb3e_ordersystem;User Id=db_aacb3e_ordersystem_admin;Password=Grow2024Soft");
         }
 
 

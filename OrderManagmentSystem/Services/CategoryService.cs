@@ -30,7 +30,7 @@ namespace OrderManagementSystem.Services
 
                 if (resizedImage != null)
                 {
-                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images");
+                    string imagesFolderPath = Path.Combine(_environment.WebRootPath, "Images", "CategoryImg");
                     if (!Directory.Exists(imagesFolderPath))
                         Directory.CreateDirectory(imagesFolderPath);
 
@@ -42,7 +42,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    imageUrl = "https://husamta-001-site1.htempurl.com/Images/" + uniqueFileName;
+                    imageUrl = "https://growsoft-001-site1.htempurl.com/Images/CategoryImg/" + uniqueFileName;
                 }
             }
 
