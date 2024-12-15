@@ -9,7 +9,7 @@ namespace OrderManagementSystem.Data
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=SQL8001.site4now.net;Initial Catalog=db_aacb3e_ordersystem;User Id=db_aacb3e_ordersystem_admin;Password=Grow2024Soft");
+            optionsBuilder.UseNpgsql("postgresql://order_db_3i7w_user:orlxC9dy00s9Sz741JzXJBC3vrJqA6oc@dpg-ctfe8idds78s73dpc4mg-a.oregon-postgres.render.com/order_db_3i7w");
         }
 
 
