@@ -79,7 +79,7 @@ namespace OrderManagementSystem.Services
                         await resizedImage.CopyToAsync(fileStream);
                     }
 
-                    imageUrl = "https://growsoft-001-site1.htempurl.com/Images/ProductImg" + uniqueFileName;
+                    imageUrl = "https://growsoft-001-site1.htempurl.com/Images/ProductImg/" + uniqueFileName;
                 }
             }
 

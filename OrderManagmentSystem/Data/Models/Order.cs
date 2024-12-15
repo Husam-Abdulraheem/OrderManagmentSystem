@@ -13,6 +13,8 @@ namespace OrderManagementSystem.Data.Models
 
         public float TotalDeal { get; set; }
 
+        public string State { get; set; }
+
         [ForeignKey("Retailer")]
         public int RetailerId { get; set; }
 

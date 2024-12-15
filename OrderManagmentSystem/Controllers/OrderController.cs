@@ -73,5 +73,26 @@ namespace OrderManagementSystem.Controllers
             return Ok(orders);
         }
 
+        [Route("UpdateState")]
+        [HttpPut]
+        public async Task<IActionResult> ChangeState(int orderId, string state)
+        {
+            try
+            {
+                var order = await _orderService.ChangeState(orderId, state);
+
+                if (order == null)
+                    return NotFound("No order found");
+
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                // يمكنك تسجيل الاستثناء هنا باستخدام ILogger إذا كنت تستخدم نظام تسجيل
+                return StatusCode(500, "An error occurred while updating the order state.");
+            }
+        }
+
+
     }
 }

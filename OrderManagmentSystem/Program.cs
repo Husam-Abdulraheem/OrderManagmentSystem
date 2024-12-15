@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("https://supplier-application.vercel.app", "http://localhost:3000")
+                          policy.WithOrigins("https://supplier-application.vercel.app", "https://wholesalingmanagementplatform.vercel.app", "http://localhost:3000")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                       });

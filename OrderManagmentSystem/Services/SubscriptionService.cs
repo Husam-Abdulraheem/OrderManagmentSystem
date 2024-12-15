@@ -2,6 +2,7 @@
 using OrderManagementSystem.Data;
 using OrderManagementSystem.Data.Models;
 using OrderManagementSystem.Interfaces;
+using System.Data;
 
 namespace OrderManagementSystem.Services
 {
@@ -67,6 +68,7 @@ namespace OrderManagementSystem.Services
 
             supplier.Subscription.StartDate = DateTime.UtcNow;
             supplier.Subscription.EndDate =
+                subType.ToLower() == "default" ? DateTime.UtcNow.AddDays(3) :
                 subType.ToLower() == "monthly" ? DateTime.UtcNow.AddMonths(1) :
                 subType.ToLower() == "Quarterly" ? DateTime.UtcNow.AddMonths(3) :
                 subType.ToLower() == "biannual" ? DateTime.UtcNow.AddMonths(6) :
@@ -107,6 +109,7 @@ namespace OrderManagementSystem.Services
                 SupplierId = supplier.Id,
                 StartDate = DateTime.UtcNow,
                 EndDate =
+            type.ToLower() == "default" ? DateTime.UtcNow.AddDays(3) :
             type.ToLower() == "monthly" ? DateTime.UtcNow.AddMonths(1) :
             type.ToLower() == "Quarterly" ? DateTime.UtcNow.AddMonths(3) :
             type.ToLower() == "biannual" ? DateTime.UtcNow.AddMonths(6) :

@@ -7,6 +7,7 @@
         public virtual RetailerDTO? Retailer { get; set; }
         public DateTime OrderDate { get; set; }
         public float TotalDeal { get; set; }
+        public string? State { get; set; }
         public virtual List<OrderItemDTO>? Items { get; set; } = new List<OrderItemDTO>();
     }
 }

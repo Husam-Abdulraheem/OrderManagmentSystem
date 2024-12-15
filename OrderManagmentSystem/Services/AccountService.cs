@@ -241,7 +241,13 @@ namespace OrderManagementSystem.Services
             Supplier supplier = new Supplier
             {
                 User = addUser,
-                Subscription = null,
+                Subscription = new Subscription
+                {
+                    IsActive = true,
+                    StartDate = DateTime.UtcNow,
+                    EndDate = DateTime.UtcNow.AddDays(3),
+                    Type = "default"
+                },
             };
             // Add Supplier to database
             try

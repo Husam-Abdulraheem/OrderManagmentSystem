@@ -35,14 +35,14 @@ namespace OrderManagementSystem.Services
                         Total = SumPrice(oi.Product.Price, oi.Quantity)
                     }).ToList();
 
-                    var totalDeal = Items.Sum(t => t.Total);
 
                     return new OrderDTO
                     {
                         OrderId = o.Id,
                         OrderDate = o.OrderDate,
                         RetailerId = o.RetailerId,
-                        TotalDeal = totalDeal,
+                        TotalDeal = Items.Sum(t => t.Total),
+                        State = o.State,
                         Items = Items
                     };
                 }).ToList();
@@ -69,6 +69,7 @@ namespace OrderManagementSystem.Services
             {
                 RetailerId = dto.RetailerId,
                 OrderDate = dto.OrderDate,
+                State = "قيد الإنتظار",
                 OrderItems = new List<OrderItem>()
             };
 
@@ -125,6 +126,7 @@ namespace OrderManagementSystem.Services
                     OrderId = order.Id,
                     RetailerId = order.RetailerId,
                     OrderDate = order.OrderDate,
+                    State = order.State,
                     TotalDeal = totalDeal,
                     Items = Items,
                 };
@@ -167,6 +169,7 @@ namespace OrderManagementSystem.Services
                         OrderId = group.First().OrderId,
                         RetailerId = group.First().Order.RetailerId,
                         OrderDate = group.First().Order.OrderDate,
+                        State = group.First().Order.State,
                         TotalDeal = totalDeal,
                         Items = Items,
                         Retailer = new RetailerDTO
@@ -185,6 +188,31 @@ namespace OrderManagementSystem.Services
             return orderDtos;
         }
 
+
+
+
+        public async Task<object> ChangeState(int orderId, string state)
+        {
+            var order = await _db.Orders.FindAsync(orderId);
+
+            if (order == null)
+                throw new ArgumentException($"Cannot find the order with ID {orderId}");
+
+            var validStates = new List<string>
+            {
+                "pending", "delivered", "received","canceled"
+            };
+            if (!validStates.Contains(state.ToLower()))
+                throw new ArgumentException("Invalid state");
+
+
+            order.State = state;
+            _db.Orders.Update(order);
+            await _db.SaveChangesAsync();
+            return order;
+        }
+
+        // this method for sum products price
         private float SumPrice(float price, int quantity)
         {
             return price * quantity;

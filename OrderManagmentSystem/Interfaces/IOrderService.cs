@@ -8,5 +8,6 @@ namespace OrderManagementSystem.Interfaces
         Task<OrderDTO> AddOrder(OrderDTO order);
         Task<List<OrderDTO>> GetOrdersByRetailer(int retailerId);
         Task<List<OrderDTO>> GetOrdersBySupplier(int supplierId);
+        Task<object> ChangeState(int orderId, string state);
     }
 }
