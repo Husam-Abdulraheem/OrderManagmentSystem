@@ -43,7 +43,7 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<TokenService>();
 
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {

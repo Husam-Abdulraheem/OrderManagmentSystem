@@ -9,7 +9,7 @@ namespace OrderManagementSystem.Data
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("postgresql://order_db_3i7w_user:orlxC9dy00s9Sz741JzXJBC3vrJqA6oc@dpg-ctfe8idds78s73dpc4mg-a.oregon-postgres.render.com/order_db_3i7w");
+            optionsBuilder.UseNpgsql("Host=dpg-ctfe8idds78s73dpc4mg-a;Port=5432;Database=order_db_3i7w;Username=order_db_3i7w_user;Password=orlxC9dy00s9Sz741JzXJBC3vrJqA6oc");
         }
 
 

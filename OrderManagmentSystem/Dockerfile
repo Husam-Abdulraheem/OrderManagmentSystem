@@ -27,4 +27,5 @@ RUN dotnet publish "./OrderManagementSystem.csproj" -c $BUILD_CONFIGURATION -o /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OrderManagementSystem.dll"]
+ENV ConnectionStrings__DefaultConnection="Host=dpg-ctfe8idds78s73dpc4mg-a;Port=5432;Database=order_db_3i7w;Username=order_db_3i7w_user;Password=orlxC9dy00s9Sz741JzXJBC3vrJqA6oc"
+ENTRYPOINT ["dotnet", "OrderManagementSystem.dll", "database", "update"]
